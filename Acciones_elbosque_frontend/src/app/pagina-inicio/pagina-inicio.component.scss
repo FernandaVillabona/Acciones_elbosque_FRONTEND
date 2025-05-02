@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@700&display=swap');
+
+:host {
+    display: block;
+    background-color: #060A1B;
+    min-height: 100vh;
+    overflow: hidden; // evita scroll
+    font-family: 'Albert Sans', sans-serif;
+    color: white;
+  }
+  
+  /* Header */
+  .custom-header {
+    background-color: #131727;
+    height: 100px;
+  
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+    }
+  
+    .brand-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: white;
+    }
+  
+    .header-btn {
+      font-size: 1rem;
+      padding: 10px 24px;
+      border-radius: 25px;
+      font-weight: 600;
+    }
+  }
+
+  .text-floating {
+    position: absolute;
+    top: 62%;       // 🔧 ajusta este valor para subir o bajar
+    right: 30%;     // 🔧 ajusta este valor para mover más a la izquierda o derecha
+    font-family: 'Alegreya Sans', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: white;
+    max-width: 420px;
+    line-height: 1.3;
+    z-index: 2;
+    
+    text-align: center;
+  
+    @media (max-width: 768px) {
+      font-size: 22px;
+      top: 95%;
+      right: 5%;
+      max-width: 90%;
+      text-align: center;
+    }
+  }
+  
+  /* Sección principal */
+  .hero-section {
+    position: relative;
+    min-height: 400px;
+  
+    .title-hero {
+      font-family: 'Alegreya Sans', sans-serif;
+      font-size: 96px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.1;
+    }
+  
+    .title-highlight {
+      background-color: white;
+      color: #060A1B;
+      padding: 0 12px;
+      display: inline-block;
+    }
+  
+    .line-absolute {
+      position: absolute;
+      top: 0%;     // 🔧 Ajusta esto para moverla más arriba o abajo
+      right: 45%;    // 🔧 Ajusta esto para moverla a la izquierda o derecha
+      width: 900px; // puedes usar 600px o 1024px según tu diseño
+      height: auto;
+      z-index: 0;
+      pointer-events: none;
+  
+      @media (max-width: 768px) {
+        width: 280px;
+        top: 90%;
+        right: 5%;
+      }
+    }
+  }
+  
+  /* Hombre + texto al lado izquierdo */
+  .fixed-man {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 585px;
+    height: auto;
+    max-width: 40vw;
+    z-index: 0;
+    pointer-events: none;
+  
+    @media (max-width: 768px) {
+      width: 250px;
+    }
+  }
