@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 
@@ -31,7 +31,7 @@ toggleConfirmPasswordVisibility(): void {
   this.showConfirmPassword = !this.showConfirmPassword;
 }
 
-  constructor(private fb: FormBuilder, private location: Location) {
+  constructor(private fb: FormBuilder, private location: Location, private router: Router ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -96,8 +96,7 @@ toggleConfirmPasswordVisibility(): void {
     const errors = this.passwordErrors;
     return errors.length && errors.hasUpperCase && errors.hasNumber && errors.hasSymbol && errors.hasLetters;
   }
-
   goBack(): void {
-    this.location.back();
+    this.router.navigate(['/']);
   }
 }

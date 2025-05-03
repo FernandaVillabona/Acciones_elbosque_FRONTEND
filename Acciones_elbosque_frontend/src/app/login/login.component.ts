@@ -51,6 +51,6 @@ onSubmit(): void {
 }
 
 goBack(): void {
-  this.location.back(); // Navigate to the previous page
+  this.router.navigate(['/']);
 }
 }
