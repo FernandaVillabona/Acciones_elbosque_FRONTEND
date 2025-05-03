@@ -1,1 +1,80 @@
-<p>principal works!</p>
+<div class="container-fluid dashboard-container">
+    <div class="container">
+      <h2 class="dashboard-title">Dashboard Principal</h2>
+
+      <div class="info-top-bar d-flex justify-content-end align-items-center gap-4 mb-4">
+        <div class="clock text-white d-flex align-items-center">
+          <i class="bi bi-clock me-2"></i> {{ currentTime }}
+        </div>
+        <div class="location text-white d-flex align-items-center">
+          <i class="bi bi-geo-alt-fill me-2"></i> {{ location }}
+        </div>
+      </div>
+  
+      <!-- Contenedor: Valor del portafolio -->
+      <div class="portfolio-value-box">
+        <div>
+          <p class="portfolio-label">Valor del portafolio</p>
+          <h1 class="portfolio-amount">$58.230,45</h1>
+        </div>
+        <img src="assets/line.png" alt="Gráfica" width="150" height="150">
+      </div>
+  
+      <!-- Contenedores de tabla -->
+      <div class="row g-4">
+        <!-- Holdings -->
+        <div class="col-md-6">
+          <div class="data-box">
+            <h5 class="table-title">Holdings</h5> 
+          
+            <table class="table table-borderless holdings-table">
+              <thead>
+                <tr>
+                  <th>Acción</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let holding of holdings">
+                  <td>{{ holding.accion }}</td>
+                  <td>{{ holding.cantidad }}</td>
+                  <td>{{ holding.precio }}</td>
+                  <td>{{ holding.valor }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+        <!-- Historial de operaciones -->
+        <div class="col-md-6">
+          <div class="data-box">
+            <h5 class="table-title">Historial de operaciones</h5>
+            <table class="table table-borderless operations-table">
+              <thead>
+                <tr>
+                  <th>Acción</th>
+                  <th>Tipo</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let operacion of operaciones">
+                  <td>{{ operacion.accion }}</td>
+                  <td [ngClass]="{
+                        'text-success': operacion.tipo === 'compra',
+                        'text-danger': operacion.tipo === 'venta'
+                      }">
+                    {{ operacion.tipo }}
+                  </td>
+                  <td>{{ operacion.fecha }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
