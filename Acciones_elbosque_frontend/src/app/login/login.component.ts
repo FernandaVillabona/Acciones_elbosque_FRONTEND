@@ -38,8 +38,10 @@ onSubmit(): void {
   // Validación quemada
   if (this.loginForm.valid) {
     if (email === 'admin@bosque.com' && password === 'Admin123!') {
-      // Redirige al panel
+      // ✅ Guarda un token simulado
+      localStorage.setItem('token', 'fake-jwt-token');
       this.router.navigate(['/dashboard']);
+    
     } else {
       alert('Credenciales inválidas');
     }
@@ -49,6 +51,6 @@ onSubmit(): void {
 }
 
 goBack(): void {
-  this.location.back(); // Navigate to the previous page
+  this.router.navigate(['/']);
 }
 }

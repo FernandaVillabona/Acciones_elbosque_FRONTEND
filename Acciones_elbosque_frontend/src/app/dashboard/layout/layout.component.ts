@@ -28,8 +28,7 @@ export class LayoutComponent {
   }
 
   logout(): void {
-    console.log('Logout clicked');
-    localStorage.clear();
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }
