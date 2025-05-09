@@ -15,7 +15,9 @@
       <div class="portfolio-value-box">
         <div>
           <p class="portfolio-label">Valor del portafolio</p>
-          <h1 class="portfolio-amount">$58.230,45</h1>
+<h1 class="portfolio-amount">{{ valorPortafolio | currency:'USD ':'symbol':'1.0-0' }}</h1>
+<h1 class="portfolio-amount">{{ valorPortafolio | currency:'COP ':'symbol':'1.0-0' }}</h1>
+
         </div>
         <img src="assets/line.png" alt="Gráfica" width="150" height="150">
       </div>
@@ -38,10 +40,10 @@
               </thead>
               <tbody>
                 <tr *ngFor="let holding of holdings">
-                  <td>{{ holding.accion }}</td>
-                  <td>{{ holding.cantidad }}</td>
-                  <td>{{ holding.precio }}</td>
-                  <td>{{ holding.valor }}</td>
+                   <td>{{ holding.accion }}</td>
+                <td>{{ holding.cantidad }}</td>
+                <td>{{ holding.precio_actual | currency: 'USD' }}</td>
+                <td>{{ holding.precio_actual * holding.cantidad | currency: 'USD' }}</td>
                 </tr>
               </tbody>
             </table>

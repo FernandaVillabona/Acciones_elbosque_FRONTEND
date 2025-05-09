@@ -1,1 +1,46 @@
-<p>mercado works!</p>
+<div class="container-fluid dashboard-container">
+    <div class="container">
+      <h2 class="dashboard-title">Mercado de Acciones</h2>
+  
+      <div class="info-top-bar d-flex justify-content-end align-items-center gap-4 mb-4">
+        <div class="clock text-white d-flex align-items-center">
+          <i class="bi bi-clock me-2"></i> {{ currentTime }}
+        </div>
+        <div class="location text-white d-flex align-items-center">
+          <i class="bi bi-geo-alt-fill me-2"></i> {{ location }}
+        </div>
+      </div>
+  
+      <!-- Tabla de acciones del mercado -->
+      <div class="data-box mt-4">
+        <h5 class="table-title">Acciones en tiempo real</h5>
+        <table class="table table-borderless market-table">
+          <thead>
+            <tr>
+              <th>Símbolo</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Variación</th>
+              <th>Volumen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stock of marketStocks">
+              <td>{{ stock.symbol }}</td>
+              <td>{{ stock.name }}</td>
+              <td>{{ stock.price | currency:'USD' }}</td>
+              <td [ngClass]="{ 'text-success': stock.change >= 0, 'text-danger': stock.change < 0 }">
+                {{ stock.change }}%
+              </td>
+              <td>{{ stock.volume | number }}</td>
+              <td>
+                <button class="btn btn-sm btn-success" (click)="comprar(stock)">Comprar</button>
+                <button class="btn btn-sm btn-danger" (click)="vender(stock)">Vender</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

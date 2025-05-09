@@ -4,14 +4,12 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../services/users/users.service';
-
-
-
+import { Usuario } from '../models/usuario';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule,],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.scss']
 })
@@ -23,7 +21,7 @@ export class RegistroComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userService: UserService // 👈 aquí
+    private userService: UserService
   ) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -67,10 +65,10 @@ export class RegistroComponent {
       this.registerForm.markAllAsTouched();
       return;
     }
-  
+
     const formValues = this.registerForm.value;
-  
-    const nuevoUsuario = {
+
+    const nuevoUsuario: Usuario = {
       nombre: formValues.firstName,
       apellido: formValues.lastName,
       email: formValues.email,
@@ -79,20 +77,26 @@ export class RegistroComponent {
       estado: true,
       rol: 'USER',
       portafolio: {
-        idPortafolio: 1
+        valor: 0,
+        holdings: [],
+        operaciones: []
       }
     };
-  
-    this.userService.registrarUsuario(nuevoUsuario).subscribe({
-      next: () => {
-        alert('Usuario registrado correctamente');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('Error al registrar usuario', err);
-        alert('Error al registrar usuario');
-      }
-    });
+
+this.userService.registrarUsuario(nuevoUsuario).subscribe({
+  next: () => {
+    alert('Usuario registrado correctamente');
+    this.router.navigate(['/login']);
+  },
+  error: (err) => {
+    if (err.status === 409) {
+      alert('El correo ya está registrado.');
+    } else {
+      console.error('Error desconocido:', err);
+      alert('Error al registrar usuario.');
+    }
+  }
+});
   }
 
   togglePasswordVisibility(): void {
