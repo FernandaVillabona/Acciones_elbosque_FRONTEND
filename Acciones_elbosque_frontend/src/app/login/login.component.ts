@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Location } from '@angular/common'; // ✅ Importar Location
+import { UserService } from '../services/users/users.service';
+
 
 @Component({
   selector: 'app-login',
@@ -17,6 +19,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private location: Location,
+    private userService: UserService,
     private router: Router  // ✅ agrega Router
   ) {
     this.loginForm = this.fb.group({
@@ -33,21 +36,31 @@ togglePasswordVisibility(): void {
 
   
 onSubmit(): void {
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
+  }
+
   const { email, password } = this.loginForm.value;
 
-  // Validación quemada
-  if (this.loginForm.valid) {
-    if (email === 'admin@bosque.com' && password === 'Admin123!') {
-      // ✅ Guarda un token simulado
-      localStorage.setItem('token', 'fake-jwt-token');
+  // ✅ Acceso quemado de prueba
+  if (email === 'test@bosque.com' && password === 'Test123!') {
+    localStorage.setItem('token', 'fake-token-for-test-user');
+    this.router.navigate(['/dashboard']);
+    return;
+  }
+
+  // ✅ Acceso real con API
+  this.userService.login(email, password).subscribe({
+    next: (token) => {
+      localStorage.setItem('token', token);
       this.router.navigate(['/dashboard']);
-    
-    } else {
+    },
+    error: (err) => {
+      console.error('Login error:', err);
       alert('Credenciales inválidas');
     }
-  } else {
-    this.loginForm.markAllAsTouched();
-  }
+  });
 }
 
 goBack(): void {
