@@ -1,1 +1,26 @@
-<p>operaciones works!</p>
+<div class="container my-5">
+    <h2 class="mb-4">Historial de operaciones</h2>
+  
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Acción</th>
+          <th>Tipo</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Valor total</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let op of operaciones">
+          <td>{{ op.accion }}</td>
+          <td [ngClass]="{ 'text-success': op.tipo === 'COMPRA', 'text-danger': op.tipo === 'VENTA' }">{{ op.tipo }}</td>
+          <td>{{ op.cantidad }}</td>
+          <td>{{ op.precio }}</td>
+          <td>{{ op.cantidad * op.precio | currency:'USD' }}</td>
+          <td>{{ op.fecha | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

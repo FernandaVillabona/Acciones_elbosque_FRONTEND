@@ -1,44 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { UserService } from '../../../services/users/users.service';
+import { CurrencyPipe } from '@angular/common';
+
+import { DashboardUsuarioDTO, Holding, Operacion, Orden, Usuario } from '../../../models/usuario';
+
+
+
 @Component({
   selector: 'app-principal',
   standalone: true,
-  imports: [CommonModule], // 👈 necesario para usar ngClass, ngIf, ngFor, etc.
+  imports: [CommonModule ],
+  providers: [CurrencyPipe],
   templateUrl: './principal.component.html',
   styleUrls: ['./principal.component.scss']
 })
-
 export class PrincipalComponent implements OnInit {
   currentTime: string = '';
   location: string = 'Cargando ubicación...';
+  valorPortafolio: number = 0;
+  holdings: any[] = [];
+  operaciones: any[] = [];
 
-  holdings = [
-    { accion: 'AAPL', cantidad: 10, precio: '$150', valor: '$1500' },
-    { accion: 'GOOGL', cantidad: 5, precio: '$2800', valor: '$14000' },
-    { accion: 'AMZN', cantidad: 3, precio: '$3300', valor: '$9900' },
-    { accion: 'MSFT', cantidad: 8, precio: '$300', valor: '$2400' },
-    { accion: 'TSLA', cantidad: 6, precio: '$700', valor: '$4200' },
-    { accion: 'NFLX', cantidad: 4, precio: '$400', valor: '$1600' },
-    { accion: 'NVDA', cantidad: 7, precio: '$650', valor: '$4550' }
-  ];
-  
-  operaciones = [
-    { accion: 'MSFT', tipo: 'compra', fecha: '2025-04-20' },
-    { accion: 'TSLA', tipo: 'venta', fecha: '2025-04-25' },
-    { accion: 'AAPL', tipo: 'compra', fecha: '2025-04-15' },
-    { accion: 'GOOGL', tipo: 'venta', fecha: '2025-04-18' },
-    { accion: 'AMZN', tipo: 'compra', fecha: '2025-04-22' },
-    { accion: 'NVDA', tipo: 'compra', fecha: '2025-04-26' },
-    { accion: 'NFLX', tipo: 'venta', fecha: '2025-04-27' }
-  ];
+  constructor(private userService: UserService) {}
+
   ngOnInit(): void {
     this.getLocation();
     this.updateClock();
+    this.loadDashboardData();
   }
+
   updateClock(): void {
-    const now = new Date();
-    this.currentTime = now.toLocaleTimeString();
+    this.currentTime = new Date().toLocaleTimeString();
   }
 
   getLocation(): void {
@@ -51,4 +45,29 @@ export class PrincipalComponent implements OnInit {
         this.location = 'Ubicación desconocida';
       });
   }
+    loadDashboardData(): void {
+  const userId = localStorage.getItem('userId');
+  if (userId) {
+    this.userService.getDashboardUsuarioData(+userId).subscribe({
+      next: (dashboardData: DashboardUsuarioDTO) => {
+        this.valorPortafolio = dashboardData.valorPortafolio;
+        this.holdings = dashboardData.holdings;
+        this.operaciones = this.mapOrdenesToOperaciones(dashboardData.operaciones); // Mapeo aquí
+      },
+      error: (err) => {
+        console.error('Error cargando los datos del dashboard:', err);
+      }
+    });
+  }
+}
+
+// Método para mapear las órdenes a operaciones
+mapOrdenesToOperaciones(ordenes: Orden[]): any[] {
+  return ordenes.map(orden => ({
+    tipo: orden.tipo_orden === 'market_order' ? 'Compra' : 'Venta', // Tipo de orden (puedes ajustar esto si es necesario)
+    fecha: orden.fecha_creacion // Fecha de la orden
+  }));
+}
+
+
 }

@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Location } from '@angular/common';
+import { UserService } from '../services/users/users.service';
+import { Usuario } from '../models/usuario';
 
 @Component({
   selector: 'app-registro',
@@ -14,31 +15,21 @@ import { Location } from '@angular/common';
 })
 export class RegistroComponent {
   registerForm!: FormGroup;
-  mockUsers: any[] = [
-    { id: 1, email: 'usuario@ejemplo.com' }
-  ];
+  showPassword = false;
+  showConfirmPassword = false;
 
-
-  showPassword: boolean = false;
-  
-showConfirmPassword = false;
-
-togglePasswordVisibility(): void {
-  this.showPassword = !this.showPassword;
-}
-
-toggleConfirmPasswordVisibility(): void {
-  this.showConfirmPassword = !this.showConfirmPassword;
-}
-
-  constructor(private fb: FormBuilder, private location: Location, private router: Router ) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private userService: UserService
+  ) {
     this.registerForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
+      phone: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', Validators.required]
     });
   }
 
@@ -64,6 +55,11 @@ toggleConfirmPasswordVisibility(): void {
     return pwd === confirm;
   }
 
+  allPasswordRulesPass(): boolean {
+    const errors = this.passwordErrors;
+    return errors.length && errors.hasUpperCase && errors.hasNumber && errors.hasSymbol && errors.hasLetters;
+  }
+
   onSubmit(): void {
     if (this.registerForm.invalid || !this.passwordsMatch || !this.allPasswordRulesPass()) {
       this.registerForm.markAllAsTouched();
@@ -71,31 +67,46 @@ toggleConfirmPasswordVisibility(): void {
     }
 
     const formValues = this.registerForm.value;
-    const emailExists = this.mockUsers.some(
-      (user) => user.email.toLowerCase() === formValues.email.toLowerCase()
-    );
 
-    if (emailExists) {
-      alert('El correo electrónico ya está registrado.');
-      return;
-    }
-
-    const newUser = {
-      id: Date.now(),
-      ...formValues
+    const nuevoUsuario: Usuario = {
+      nombre: formValues.firstName,
+      apellido: formValues.lastName,
+      email: formValues.email,
+      telefono: formValues.phone,
+      password: formValues.password,
+      estado: true,
+      rol: 'USER',
+      portafolio: {
+        valor: 0,
+        holdings: [],
+        operaciones: []
+      }
     };
 
-    this.mockUsers.push(newUser);
-    console.log('Usuario registrado:', newUser);
-
-    alert('Usuario registrado exitosamente (simulado)');
-    this.registerForm.reset();
+this.userService.registrarUsuario(nuevoUsuario).subscribe({
+  next: () => {
+    alert('Usuario registrado correctamente');
+    this.router.navigate(['/login']);
+  },
+  error: (err) => {
+    if (err.status === 409) {
+      alert('El correo ya está registrado.');
+    } else {
+      console.error('Error desconocido:', err);
+      alert('Error al registrar usuario.');
+    }
+  }
+});
   }
 
-  allPasswordRulesPass(): boolean {
-    const errors = this.passwordErrors;
-    return errors.length && errors.hasUpperCase && errors.hasNumber && errors.hasSymbol && errors.hasLetters;
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   goBack(): void {
     this.router.navigate(['/']);
   }

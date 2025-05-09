@@ -1,14 +1,12 @@
-
 <header class="login-header d-flex align-items-center px-4 py-3">
-  <button class="btn btn-link back-button" (click)="goBack()">
-    ← Volver
-  </button>
+  <button class="btn btn-link back-button" (click)="goBack()">← Volver</button>
 </header>
+
 <div class="login-container">
-  <!-- Imagen debajo como fondo visual -->
+  <!-- Imagen de fondo -->
   <img src="assets/fondo.png" alt="Fondo" class="background-image" />
 
-  <!-- Contenido de login encima -->
+  <!-- Caja de login -->
   <div class="login-wrapper">
     <div class="login-box bg-white bg-opacity-75 p-5 rounded-4 shadow-lg">
       <h1 class="login-title text-center">Inicia sesión</h1>
@@ -16,7 +14,8 @@
         Accede a tu portafolio y empieza a invertir con confianza
       </p>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- 🔐 Formulario principal -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!requiresOtp">
         <div class="mb-3">
           <label for="email" class="form-label login-label">Correo</label>
           <input
@@ -24,9 +23,7 @@
             id="email"
             formControlName="email"
             class="form-control login-input"
-            [ngClass]="{
-              'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched
-            }"
+            [ngClass]="{ 'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched }"
             placeholder="Ingresa tu correo"
           />
           <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="invalid-feedback">
@@ -42,9 +39,7 @@
             formControlName="password"
             class="form-control login-input pe-5"
             placeholder="Ingresa tu contraseña"
-            [ngClass]="{
-              'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched
-            }"
+            [ngClass]="{ 'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched }"
           />
           <button
             type="button"
@@ -54,16 +49,29 @@
           >
             <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
           </button>
-          <div
-            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-            class="invalid-feedback"
-          >
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
             La contraseña es requerida.
           </div>
         </div>
-       
 
-        <button type="submit" class="btn custom-login-btn">Confirmar</button>
+        <button type="submit" class="btn custom-login-btn w-100">Confirmar</button>
+      </form>
+
+      <!-- 🔐 Verificación OTP -->
+      <form *ngIf="requiresOtp" (ngSubmit)="verificarOtp()" #otpForm="ngForm">
+        <div class="mb-3">
+          <label for="otp" class="form-label login-label">Código OTP</label>
+          <input
+            type="text"
+            id="otp"
+            name="otp"
+            [(ngModel)]="codigoOtp"
+            class="form-control login-input"
+            placeholder="Ingresa el código OTP"
+            required
+          />
+        </div>
+        <button type="submit" class="btn custom-login-btn w-100">Verificar código</button>
       </form>
     </div>
   </div>
