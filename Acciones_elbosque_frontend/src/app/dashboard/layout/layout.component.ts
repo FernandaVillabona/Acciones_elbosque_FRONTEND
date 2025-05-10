@@ -14,6 +14,7 @@ import { Usuario } from '../../models/usuario';
 export class LayoutComponent implements OnInit {
   isCollapsed = false;
   usuario?: Usuario;
+   nombreCompleto = '';
 
   menu = [
     { icon: 'bi-calendar', label: 'Dashboard Principal' },
@@ -29,19 +30,24 @@ export class LayoutComponent implements OnInit {
     private userService: UserService // ✅ inyectado correctamente
   ) {}
 
-  ngOnInit(): void {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.userService.obtenerUsuarioPorId(+userId).subscribe({
-        next: (user) => {
-          this.usuario = user;
-        },
-        error: (err) => {
-          console.error('Error cargando usuario:', err);
-        }
-      });
-    }
+ngOnInit(): void {
+  const idUsuario = localStorage.getItem('idUsuario');
+  console.log('ID usuario recuperado:', idUsuario);
+
+  if (idUsuario) {
+    this.userService.getDashboardData(+idUsuario).subscribe({
+      next: data => {
+        console.log('Datos del usuario recibidos:', data);
+        this.nombreCompleto = `${data.nombre} ${data.apellido}`;
+      },
+      error: (err: any) => {
+        console.error('Error al obtener datos del usuario en layout:', err);
+      }
+    });
+  } else {
+    console.warn('No hay idUsuario en localStorage');
   }
+}
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;

@@ -19,8 +19,8 @@
       <img src="assets/icon.png" alt="Logo" width="150" height="150" class="mb-2" />
 
       <!-- Nombre persona -->
-      <p class="user-name text-center" *ngIf="!isCollapsed">
-  {{ usuario?.nombre }} {{ usuario?.apellido }}
+     <p class="user-name text-center" *ngIf="nombreCompleto">
+  {{ nombreCompleto }}
 </p>
 
       <!-- Menú -->

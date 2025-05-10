@@ -95,7 +95,7 @@ this.otpService.verificarOtp(payload).subscribe({
 
     // Obtener payload del JWT (medio)
     const payload = JSON.parse(atob(jwt.split('.')[1]));
-    localStorage.setItem('userId', payload.sub);   // <-- ID guardado
+localStorage.setItem('idUsuario', payload.sub);
 
     this.router.navigate(['/dashboard']);
   },
