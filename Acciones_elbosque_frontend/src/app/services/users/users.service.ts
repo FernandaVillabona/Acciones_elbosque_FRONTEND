@@ -52,18 +52,10 @@ verificarOtp(payload: { email: string, codigoOtp: string }): Observable<{ token:
   listarUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.baseUrl}/listar`);
   }
-
-  getDashboardUsuario(id: number): Observable<any> {
-  return this.http.get<any>(`http://localhost:8080/usuarios/${id}/dashboard`);
+getDashboardData(id: number): Observable<any> {
+  return this.http.get<any>(`http://localhost:8080/usuarios/${id}`);
 }
 
- // Obtener datos del dashboard del usuario
-getDashboardUsuarioData(id: number): Observable<any> {
-  return this.http.get<any>(`${this.baseUrl}/${id}/dashboard`);
-}
 
-getDashboardData(userId: number): Observable<any> {
-  return this.http.get<any>(`http://localhost:8080/usuarios/${userId}/dashboard`);
-}
 
 }

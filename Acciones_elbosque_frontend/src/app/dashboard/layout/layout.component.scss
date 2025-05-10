@@ -1,13 +1,23 @@
 :host {
   display: block;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden; /* ✅ solo oculta scroll horizontal si acaso */
 }
-
 .main-content {
-  background-color: #000218;
+background: linear-gradient(135deg, #000218 0%, #0c0c1f 25%, #1a1a2e 50%, #2a1b28 85%, #382033 100%);
+
+
+
+
   min-height: 100vh;
   padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  overflow-y: auto;
 }
 
 body, html {
@@ -22,6 +32,9 @@ body, html {
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
+     background: linear-gradient(to bottom, #0c0f1a, #1a2636, #223344);
+
+
 }
 .sidebar-expanded {
     width: 400px;
@@ -46,7 +59,7 @@ body, html {
     font-family: 'Alegreya Sans', sans-serif;
     font-size: 24px;
     font-weight: bold;
-    color: #444444;
+    color: #fff;
     margin-top: 20px;
   
     &:hover {
@@ -61,7 +74,7 @@ body, html {
       background: none;
       border: none;
       font-size: 1.2rem;
-      color: #444;
+      color: #FFF;
       &:hover {
         color: #0CA77D;
       }
@@ -69,8 +82,8 @@ body, html {
   
     .user-name {
       font-style: italic;
-      font-size: 26px;
-      color: #444444;
+      font-size: 32px;
+      color: #fff;
       font-family: 'Alegreya Sans', sans-serif;
     }
   
@@ -95,7 +108,7 @@ body, html {
   .toggle-btn {
     background: none;
     border: none;
-    color: #444444;
+    color: #fff;
     font-size: 1.5rem;
     margin-bottom: 1rem;
     align-self: flex-end;
