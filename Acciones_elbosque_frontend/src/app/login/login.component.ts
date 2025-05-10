@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { Location } from '@angular/common';
 import { UserService } from '../services/users/users.service';
-import { OtpResponse, OtpService } from '../services/otp.service'; // ajusta la ruta si es necesario
+import { OtpResponse, OtpService } from '../services/otp/otp.service'; // ajusta la ruta si es necesario
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -22,6 +22,7 @@ export class LoginComponent {
   requiresOtp = false;
   emailForOtp = '';
   codigoOtp = '';
+  
 
   constructor(
     private fb: FormBuilder,

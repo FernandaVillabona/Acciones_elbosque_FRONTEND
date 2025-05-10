@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RouterModule } from '@angular/router';
 
+
+
 @Component({
   selector: 'app-operaciones',
   standalone: true,
@@ -31,4 +33,7 @@ export class OperacionesComponent implements OnInit {
       }
     });
   }
+  
+
+
 }
