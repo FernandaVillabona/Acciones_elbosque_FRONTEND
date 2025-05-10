@@ -55,4 +55,15 @@ export class AlpacaService {
   return this.http.get<CandleData[]>(`${this.base}/historical/${symbol}/${timeFrame}`, { params })
     .pipe(catchError(this.handle));
 }
+
+placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: number): Observable<string> {
+  const params = {
+    symbol,
+    qty,
+    side,
+    idUsuario
+  };
+  return this.http.post(`${this.base}/order/market`, null, { params, responseType: 'text' })
+    .pipe(catchError(this.handle));
+}
 }
