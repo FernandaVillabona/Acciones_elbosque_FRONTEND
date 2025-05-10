@@ -30,7 +30,8 @@ export const routes: Routes = [
         path: 'mercado',
         loadComponent: () =>
           import('./dashboard/pages/mercado/mercado.component').then(m => m.MercadoComponent)
-      }
+      },
+ 
     ]
   }
 ];

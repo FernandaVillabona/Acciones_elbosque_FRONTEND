@@ -1,46 +1,46 @@
-<div class="container-fluid dashboard-container">
-    <div class="container">
-      <h2 class="dashboard-title">Mercado de Acciones</h2>
-  
-      <div class="info-top-bar d-flex justify-content-end align-items-center gap-4 mb-4">
-        <div class="clock text-white d-flex align-items-center">
-          <i class="bi bi-clock me-2"></i> {{ currentTime }}
-        </div>
-        <div class="location text-white d-flex align-items-center">
-          <i class="bi bi-geo-alt-fill me-2"></i> {{ location }}
-        </div>
-      </div>
-  
-      <!-- Tabla de acciones del mercado -->
-      <div class="data-box mt-4">
-        <h5 class="table-title">Acciones en tiempo real</h5>
-        <table class="table table-borderless market-table">
-          <thead>
-            <tr>
-              <th>Símbolo</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Variación</th>
-              <th>Volumen</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let stock of marketStocks">
-              <td>{{ stock.symbol }}</td>
-              <td>{{ stock.name }}</td>
-              <td>{{ stock.price | currency:'USD' }}</td>
-              <td [ngClass]="{ 'text-success': stock.change >= 0, 'text-danger': stock.change < 0 }">
-                {{ stock.change }}%
-              </td>
-              <td>{{ stock.volume | number }}</td>
-              <td>
-                <button class="btn btn-sm btn-success" (click)="comprar(stock)">Comprar</button>
-                <button class="btn btn-sm btn-danger" (click)="vender(stock)">Vender</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+<!-- Spinner -->
+<div *ngIf="loading" class="text-center my-4">
+  <div class="spinner-border" role="status"></div>
+</div>
+
+<!-- Error -->
+<div *ngIf="uiMessage && !loading" class="alert alert-danger">
+  {{ uiMessage }}
+</div>
+
+<!-- Balance -->
+<div *ngIf="balance" class="card my-3 shadow-sm text-white" style="background: linear-gradient(135deg, #1c1f2c, #2e3446); border-radius: 15px;">
+  <div class="card-body">
+    <h5 class="card-title mb-0">Balance de la cuenta</h5>
+    <p class="fs-4 mb-1">{{ balance.equity | currency:'USD' }}</p>
+    <small>Efectivo disponible: {{ balance.cash | currency:'USD' }}</small>
+  </div>
+</div>
+
+<!-- Activos disponibles -->
+<h4 class="mt-4 text-white">Activos disponibles</h4>
+
+<div class="row mt-3">
+  <div class="col-md-6 col-lg-4 mb-4" *ngFor="let a of assets">
+    <div class="card h-100 shadow-sm text-white" style="background: linear-gradient(135deg, #1c1f2c, #2e3446); border-radius: 15px;">
+      <div class="card-body">
+        <h5 class="card-title">{{ a.symbol }}</h5>
+        <p class="card-text mb-2">
+          {{ a.name }}<br />
+          <small class="text-muted">{{ a.exchange }}</small>
+        </p>
+
+        <!-- Gráfico embebido (TradingView) -->
+        <iframe
+          [src]="getChartUrl(a.symbol)"
+          width="100%"
+          height="200"
+          frameborder="0"
+          allowtransparency="true"
+          scrolling="no"
+          style="border: none;">
+        </iframe>
       </div>
     </div>
   </div>
+</div>
