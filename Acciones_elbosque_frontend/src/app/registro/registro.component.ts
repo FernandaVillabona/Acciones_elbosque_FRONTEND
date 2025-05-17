@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import {CommonModule, getLocaleDateTimeFormat} from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../services/users/users.service';
@@ -77,9 +77,9 @@ export class RegistroComponent {
       estado: true,
       rol: 'USER',
       portafolio: {
-        valor: 0,
         holdings: [],
-        operaciones: []
+        operaciones: [],
+        fecha_creacion: this.userService.getLocalDateFormatted()
       }
     };
 

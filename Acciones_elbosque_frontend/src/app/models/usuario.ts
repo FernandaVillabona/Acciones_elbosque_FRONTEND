@@ -1,8 +1,10 @@
+
 export interface Portafolio {
   idPortafolio?: number; // opcional, lo genera el backend
   valor?: number;
   holdings?: Holding[];
   operaciones?: Operacion[];
+  fecha_creacion?: string;
 }
 
 export interface Holding {
