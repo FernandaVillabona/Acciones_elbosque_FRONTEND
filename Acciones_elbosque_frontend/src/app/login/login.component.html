@@ -54,6 +54,10 @@
           </div>
         </div>
 
+        <div class="text-danger mb-3" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
         <button type="submit" class="btn custom-login-btn w-100">Confirmar</button>
       </form>
 
@@ -70,6 +74,9 @@
             placeholder="Ingresa el código OTP"
             required
           />
+        </div>
+        <div class="text-danger mb-3" *ngIf="errorMessage">
+          {{ errorMessage }}
         </div>
         <button type="submit" class="btn custom-login-btn w-100">Verificar código</button>
       </form>
