@@ -63,7 +63,7 @@ placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: n
     side,
     idUsuario
   };
-  return this.http.post(`${this.base}/order/market`, null, { params, responseType: 'text' })
+  return this.http.post(`http://localhost:8080/api/ordenes/market`, null, { params, responseType: 'text' })
     .pipe(catchError(this.handle));
 }
 }
