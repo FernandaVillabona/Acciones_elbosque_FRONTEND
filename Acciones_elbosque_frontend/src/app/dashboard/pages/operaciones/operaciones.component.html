@@ -14,12 +14,12 @@
       </thead>
       <tbody>
         <tr *ngFor="let op of operaciones">
-          <td>{{ op.accion }}</td>
-          <td [ngClass]="{ 'text-success': op.tipo === 'COMPRA', 'text-danger': op.tipo === 'VENTA' }">{{ op.tipo }}</td>
-          <td>{{ op.cantidad }}</td>
-          <td>{{ op.precio }}</td>
-          <td>{{ op.cantidad * op.precio | currency:'USD' }}</td>
-          <td>{{ op.fecha | date:'short' }}</td>
+          <td>{{ op.symbol }}</td>
+          <td [ngClass]="{ 'text-success': op.side === 'buy', 'text-danger': op.side === 'sell' }">{{ op.side === 'buy' ? 'COMPRA' : 'VENTA' }}</td>
+          <td>{{ op.filled_qty }}</td>
+          <td>{{ op.avg_fill_price | currency:'USD' }}</td>
+          <td>{{ op.valor_total | currency:'USD' }}</td>
+          <td>{{ op.filled_at | date:'short' }}</td>
         </tr>
       </tbody>
     </table>
