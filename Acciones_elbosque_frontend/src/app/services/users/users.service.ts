@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Usuario } from '../../models/usuario'; // Correct relative path
 
-interface OtpResponse {
+interface LoginResponse {
   token: string;
-  idUsuario: number;
+  id: number;
+  rol: string;
+  nombre: string;
+  mensaje?: string;
 }
-
 
 @Injectable({
   providedIn: 'root'
@@ -30,15 +33,28 @@ export class UserService {
     });
   }
 
-  // Login de usuario (envía OTP)
+  // Login de usuario
   login(email: string, contrasena: string): Observable<string> {
-    return this.http.post('http://localhost:8080/auth/login', {email, contrasena}, {responseType: 'text'});
+    console.log('Enviando petición de login:', {correo: email, contrasena: contrasena});
+    return this.http.post('http://localhost:8080/usuarios/login', 
+      {correo: email, contrasena: contrasena}, 
+      {responseType: 'text'}
+    ).pipe(
+      map(response => {
+        console.log('Respuesta del servidor:', response);
+        return response;
+      }),
+      catchError(error => {
+        console.error('Error en el servicio de login:', error);
+        throw error;
+      })
+    );
   }
 
-  verificarOtp(payload: { email: string, codigoOtp: string }): Observable<{ token: string; idUsuario: number }> {
-    return this.http.post<{ token: string; idUsuario: number }>(
+  verificarOtp(payload: { email: string, codigoOtp: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
       'http://localhost:8080/auth/mfa/verificar',
-      payload // ❌ NO pongas responseType aquí
+      payload
     );
   }
 
