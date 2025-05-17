@@ -16,8 +16,8 @@ export class OtpService {
   constructor(private http: HttpClient) {}
 
   verificarOtp(payload: { email: string; codigoOtp: string }): Observable<string> {
-  return this.http.post('http://localhost:8080/auth/mfa/verificar', payload, {
-    responseType: 'text'
-  });
-}
+    return this.http.post('http://localhost:8080/auth/mfa/verificar', payload, {
+      responseType: 'text'
+    });
+  }
 }

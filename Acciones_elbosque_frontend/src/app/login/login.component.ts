@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { Location } from '@angular/common';
 import { UserService } from '../services/users/users.service';
-import { OtpResponse, OtpService } from '../services/otp/otp.service'; // ajusta la ruta si es necesario
+import { OtpService } from '../services/otp/otp.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -17,12 +17,10 @@ import { FormsModule } from '@angular/forms';
 export class LoginComponent {
   loginForm!: FormGroup;
   showPassword = false;
-
-  // Estado para OTP
   requiresOtp = false;
   emailForOtp = '';
   codigoOtp = '';
-  
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -48,66 +46,91 @@ export class LoginComponent {
     }
 
     const { email, password } = this.loginForm.value;
+    console.log('Intentando login con:', { email });
 
     this.userService.login(email, password).subscribe({
-      next: (res: string) => {
-        // ⚠️ Si el backend responde con texto plano:
-        if (res.includes('Código enviado')) {
-          this.requiresOtp = true;
-          this.emailForOtp = email;
-          alert('Código OTP enviado a tu correo');
-        } else {
-          try {
-            const json = JSON.parse(res);
-            if (json.token) {
-              localStorage.setItem('token', json.token);
-              this.router.navigate(['/dashboard']);
-            } else {
-              alert('Respuesta inesperada del servidor');
-            }
-          } catch (e) {
-            console.warn('Respuesta no parseable:', res);
-            alert('Respuesta inesperada del servidor');
-          }
+      next: (rol: string) => {
+        console.log('Login exitoso, rol recibido:', rol);
+        // Guardar el rol y un token temporal en localStorage
+        localStorage.setItem('rol', rol);
+        localStorage.setItem('token', 'temp-token-' + Date.now());
+
+        // Redirigir según el rol
+        switch (rol.trim()) {
+          case 'Trader':
+          case 'Traderz':
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'Comisionista':
+            this.router.navigate(['/comisionista']);
+            break;
+          case 'Administrador':
+            this.router.navigate(['/admin']);
+            break;
+          case 'AreaLegal':
+            this.router.navigate(['/legal']);
+            break;
+          case 'JuntaDirectiva':
+            this.router.navigate(['/junta']);
+            break;
+          default:
+            this.errorMessage = 'Rol no reconocido: ' + rol;
+            break;
         }
       },
       error: (err) => {
-        console.error('Login error:', err);
-        alert('Credenciales inválidas');
+        console.error('Error en login:', err);
+        this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
       }
     });
   }
 
- 
-verificarOtp(): void {
-  if (!this.codigoOtp || !this.emailForOtp) {
-    alert('Código OTP requerido');
-    return;
+  verificarOtp(): void {
+    if (!this.codigoOtp || !this.emailForOtp) {
+      alert('Código OTP requerido');
+      return;
+    }
+
+    const payload = {
+      email: this.emailForOtp,
+      codigoOtp: this.codigoOtp
+    };
+
+    this.otpService.verificarOtp(payload).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('idUsuario', res.id);
+        localStorage.setItem('rol', res.rol);
+        localStorage.setItem('nombre', res.nombre);
+
+        // Redirigir según el rol
+        switch (res.rol) {
+          case 'Trader':
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'Comisionista':
+            this.router.navigate(['/comisionista']);
+            break;
+          case 'Administrador':
+            this.router.navigate(['/admin']);
+            break;
+          case 'AreaLegal':
+            this.router.navigate(['/legal']);
+            break;
+          case 'JuntaDirectiva':
+            this.router.navigate(['/junta']);
+            break;
+          default:
+            alert('Rol no reconocido');
+            break;
+        }
+      },
+      error: (err) => {
+        alert('Código inválido o expirado');
+      }
+    });
   }
 
-  const payload = {
-    email: this.emailForOtp,
-    codigoOtp: this.codigoOtp
-  };
-
-this.otpService.verificarOtp(payload).subscribe({
-  next: (jwt: string) => {
-    localStorage.setItem('token', jwt);
-
-    // Obtener payload del JWT (medio)
-    const payload = JSON.parse(atob(jwt.split('.')[1]));
-localStorage.setItem('idUsuario', payload.sub);
-
-    this.router.navigate(['/dashboard']);
-  },
-  error: (err) => {
-    alert('Código inválido o expirado');
-  }
-});
-
-
-
-  }
   goBack(): void {
     this.router.navigate(['/']);
   }
