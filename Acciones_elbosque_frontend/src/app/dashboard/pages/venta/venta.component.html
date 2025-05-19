@@ -1,0 +1,31 @@
+<!-- sell-stocks.component.html -->
+<div class="container">
+  <h2>Vender Acciones</h2>
+
+  <form>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Cantidad Disponible</th>
+        <th>Precio Actual</th>
+        <th>Cantidad a Vender</th>
+        <th>Acción</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let op of accionesHold">
+        <td>{{op.symbol}}</td>
+        <td>{{op.qty}}</td>
+        <td>{{op.market_value}}</td>
+        <td>
+          <input type="number" class="form-control" min="1" max="100" />
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger">Vender</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
