@@ -7,7 +7,8 @@ import { CommonModule } from '@angular/common'; // Import CommonModule
   selector: 'app-modal-compra',
   templateUrl: './modal-compra.component.html',
   styleUrls: ['./modal-compra.component.css'],
-   imports: [CommonModule, FormsModule]
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class ModalCompraComponent {
   @Input() symbol: string = '';

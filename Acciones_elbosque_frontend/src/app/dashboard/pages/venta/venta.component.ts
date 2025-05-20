@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {NgForOf} from '@angular/common';
+import {AlpacaService} from '../../../services/alpaca.service';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-venta',
@@ -13,12 +15,11 @@ import {NgForOf} from '@angular/common';
 })
 export class VentaComponent {
   accionesHold : any[] = [];
-
   ngOnInit(): void {
     this.cargarOperaciones();
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient ,private alpaca: AlpacaService) {}
 
 
   cargarOperaciones(): void {
@@ -37,6 +38,25 @@ export class VentaComponent {
       },
       error: (err) => {
         console.error('Error al cargar operaciones:', err);
+      }
+    });
+  }
+
+  onRealizarVenta(symbol: string, cantidad: number, time: string): void {
+
+    const idUsuario = Number(localStorage.getItem('idUsuario'));
+    if (cantidad < 1) {
+      alert('Datos inválidos');
+      return;
+    }
+
+    this.alpaca.placeMarketOrderSell(symbol, cantidad, 'sell', idUsuario , time).subscribe({
+      next: (res) => {
+        alert(`✅ Venta de ${cantidad} ${symbol} exitosa.`);
+      },
+      error: (err) => {
+        alert('❌ Error en la compra');
+        console.error(err);
       }
     });
   }

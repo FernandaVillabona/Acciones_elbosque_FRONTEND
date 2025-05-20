@@ -66,4 +66,16 @@ placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: n
   return this.http.post(`http://localhost:8080/api/ordenes/market`, null, { params, responseType: 'text' })
     .pipe(catchError(this.handle));
 }
+
+  placeMarketOrderSell(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: number , time:string): Observable<string> {
+    const params = {
+      symbol,
+      qty,
+      side,
+      idUsuario,
+      time
+    };
+    return this.http.post(`http://localhost:8080/api/ordenes/market/sell`, null, { params, responseType: 'text' })
+      .pipe(catchError(this.handle));
+  }
 }

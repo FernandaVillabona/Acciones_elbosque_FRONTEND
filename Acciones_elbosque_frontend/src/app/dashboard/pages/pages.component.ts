@@ -1,9 +1,14 @@
 import {Component, NgIterable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {CurrencyPipe, DatePipe, NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-pages',
-  imports: [],
+  imports: [
+    NgClass,
+    CurrencyPipe,
+    DatePipe
+  ],
   templateUrl: './pages.component.html',
   standalone: true,
   styleUrl: './pages.component.css'
