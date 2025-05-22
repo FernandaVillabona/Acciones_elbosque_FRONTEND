@@ -7,14 +7,24 @@ import { CommonModule } from '@angular/common'; // Import CommonModule
   selector: 'app-modal-compra',
   templateUrl: './modal-compra.component.html',
   styleUrls: ['./modal-compra.component.css'],
-   imports: [CommonModule, FormsModule]
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class ModalCompraComponent {
   @Input() symbol: string = '';
-  @Output() confirmar = new EventEmitter<number>();
+@Output() confirmar = new EventEmitter<{
+  symbol: string;
+  qty: number;
+  side: 'buy';
+  type: 'market' | 'limit' | 'stop' | 'take_profit';
+  targetPrice?: number | null;
+}>();
 
   @ViewChild('modalCompra') modalRef!: ElementRef;
   cantidad: number = 1;
+
+  orderType: 'market' | 'limit' | 'stop' | 'take_profit' = 'market';
+targetPrice: number | null = null;
 
   open(): void {
     if (this.modalRef?.nativeElement) {
@@ -28,10 +38,23 @@ export class ModalCompraComponent {
     }
   }
 
-  onConfirmar(): void {
-    if (this.cantidad > 0) {
-      this.confirmar.emit(this.cantidad);
-      this.close();
-    }
+confirmarOrden(): void {
+  if (this.cantidad < 1) {
+    alert('Cantidad inválida');
+    return;
   }
+
+  this.confirmar.emit({
+    symbol: this.symbol,
+    qty: this.cantidad,
+    side: 'buy',
+    type: this.orderType,
+    targetPrice: this.orderType === 'market' ? null : this.targetPrice
+  });
+
+  this.close();
+}
+
+ 
+
 }

@@ -37,10 +37,21 @@ export const routes: Routes = [
           import('./dashboard/pages/analisis/analisis.component').then(m => m.AnalisisComponent)
       },
       {
+
         path: 'finanzas',
         loadComponent: () =>
           import('./dashboard/pages/reportes/reportes.component').then(m => m.ReportesComponent)
+
+        path: 'venta',
+        loadComponent: () =>
+          import('./dashboard/pages/venta/venta.component').then(m => m.VentaComponent)
+      },
+      {
+        path: 'comisionistas_lista',
+        loadComponent: () =>
+          import('./dashboard/pages/comisionista-listas/comisionista-listas.component').then(m => m.ComisionistaListasComponent)
       }
+
     ]
   },
   {

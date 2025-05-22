@@ -49,38 +49,40 @@ export class LoginComponent {
     console.log('Intentando login con:', { email });
 
     this.userService.login(email, password).subscribe({
-      next: (rol: string) => {
-        console.log('Login exitoso, rol recibido:', rol);
-        // Guardar el rol y un token temporal en localStorage
-        localStorage.setItem('rol', rol);
-        localStorage.setItem('token', 'temp-token-' + Date.now());
-
-        // Redirigir según el rol
-        switch (rol.trim()) {
-          case 'Trader':
-          case 'Traderz':
-            this.router.navigate(['/dashboard']);
-            break;
-          case 'Comisionista':
-            this.router.navigate(['/comisionista']);
-            break;
-          case 'Administrador':
-            this.router.navigate(['/admin']);
-            break;
-          case 'AreaLegal':
-            this.router.navigate(['/legal']);
-            break;
-          case 'JuntaDirectiva':
-            this.router.navigate(['/junta']);
-            break;
-          default:
-            this.errorMessage = 'Rol no reconocido: ' + rol;
-            break;
+      next: (response: any) => {
+        console.log('Login exitoso, respuesta:', response);
+        if (typeof response === 'string') {
+          // Si la respuesta es un string, probablemente sea el rol
+          this.requiresOtp = true;
+          this.emailForOtp = email;
+          localStorage.setItem('temp_rol', response);
+          alert('Se ha enviado un código de verificación a su correo electrónico');
+        } else {
+          // Si es un objeto, manejarlo según su estructura
+          this.requiresOtp = true;
+          this.emailForOtp = email;
+          if (response.rol) {
+            localStorage.setItem('temp_rol', response.rol);
+          }
+          alert('Se ha enviado un código de verificación a su correo electrónico');
         }
       },
       error: (err) => {
         console.error('Error en login:', err);
-        this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+        if (err.status === 200) {
+          // Si el status es 200 pero llegó como error, probablemente sea una respuesta válida
+          const response = err.error;
+          this.requiresOtp = true;
+          this.emailForOtp = email;
+          if (typeof response === 'string') {
+            localStorage.setItem('temp_rol', response);
+          } else if (response.rol) {
+            localStorage.setItem('temp_rol', response.rol);
+          }
+          alert('Se ha enviado un código de verificación a su correo electrónico');
+        } else {
+          this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+        }
       }
     });
   }
@@ -98,32 +100,45 @@ export class LoginComponent {
 
     this.otpService.verificarOtp(payload).subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('idUsuario', res.id);
-        localStorage.setItem('rol', res.rol);
-        localStorage.setItem('nombre', res.nombre);
+        // Después de verificar OTP, obtener el rol
+        const password = this.loginForm.get('password')?.value;
+        this.userService.obtenerRol(this.emailForOtp, password).subscribe({
+          next: (rol: string) => {
+            console.log('Rol obtenido:', rol);
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('idUsuario', res.id);
+            localStorage.setItem('rol', rol);
+            localStorage.setItem('nombre', res.nombre);
 
-        // Redirigir según el rol
-        switch (res.rol) {
-          case 'Trader':
-            this.router.navigate(['/dashboard']);
-            break;
-          case 'Comisionista':
-            this.router.navigate(['/comisionista']);
-            break;
-          case 'Administrador':
-            this.router.navigate(['/admin']);
-            break;
-          case 'AreaLegal':
-            this.router.navigate(['/legal']);
-            break;
-          case 'JuntaDirectiva':
-            this.router.navigate(['/junta']);
-            break;
-          default:
-            alert('Rol no reconocido');
-            break;
-        }
+            // Redirigir según el rol
+            switch (rol.trim()) {
+              case 'Trader':
+              case 'Traderz':
+                this.router.navigate(['/dashboard']);
+                break;
+              case 'Comisionista':
+                this.router.navigate(['/comisionista']);
+                break;
+              case 'Administrador':
+                this.router.navigate(['/admin']);
+                break;
+              case 'AreaLegal':
+                this.router.navigate(['/legal']);
+                break;
+              case 'JuntaDirectiva':
+                this.router.navigate(['/junta']);
+                break;
+              default:
+                console.error('Rol no reconocido:', rol);
+                alert('Rol no reconocido: ' + rol);
+                break;
+            }
+          },
+          error: (err) => {
+            console.error('Error al obtener rol:', err);
+            alert('Error al obtener el rol del usuario');
+          }
+        });
       },
       error: (err) => {
         alert('Código inválido o expirado');

@@ -1,0 +1,48 @@
+<!-- sell-stocks.component.html -->
+<div class="container">
+  <h2>Vender Acciones</h2>
+
+  <form>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Cantidad Disponible</th>
+        <th>Precio Actual</th>
+        <th>Cantidad a Vender</th>
+        <th>Acción</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let op of accionesHold">
+        <td>{{ op.symbol }}</td>
+        <td>{{ op.qty }}</td>
+        <td>{{ op.market_value }}</td>
+
+        <td>
+          <input #cantidadInput type="number" class="form-control" min="1" max="{{ op.qty }}" />
+        </td>
+
+        <td>
+          <select #tifSelect class="form-control">
+            <option value="day">day - Order valid only today</option>
+            <option value="gtc">gtc - Good until canceled</option>
+            <option value="opg">opg - Market/limit on open</option>
+            <option value="cls">cls - Market/limit on close</option>
+            <option value="ioc">ioc - Immediate or cancel</option>
+            <option value="fok">fok - Fill or kill</option>
+          </select>
+        </td>
+
+        <td>
+          <button type="button" class="btn btn-danger"
+                  (click)="onRealizarVenta(op.symbol, cantidadInput.valueAsNumber , tifSelect.value)">
+            Vender
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
