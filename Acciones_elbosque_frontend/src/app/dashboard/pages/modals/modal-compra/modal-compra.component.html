@@ -1,21 +1,53 @@
-<!-- modal-compra.component.html -->
-<div class="modal fade" #modalCompra id="modalCompra" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-dark">
+<div class="modal fade" #modalCompra tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
       <div class="modal-header">
-        <h5 class="modal-title">Comprar acciones</h5>
-        <button type="button" class="btn-close" (click)="close()" aria-label="Cerrar"></button>
+        <h5 class="modal-title">Hacer orden para {{ symbol }}</h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
       </div>
       <div class="modal-body">
-        <p>Vas a comprar acciones de <strong>{{ symbol }}</strong></p>
+
+        <!-- Cantidad -->
         <div class="mb-3">
-          <label class="form-label">Cantidad</label>
-          <input type="number" [(ngModel)]="cantidad" min="1" class="form-control" />
+          <label for="cantidad" class="form-label">Cantidad</label>
+          <input type="number" id="cantidad" class="form-control" [(ngModel)]="cantidad" min="1" />
         </div>
+
+        <!-- Tipo de orden -->
+        <div class="mb-3">
+          <label for="tipoOrden" class="form-label">Tipo de orden</label>
+          <select id="tipoOrden" class="form-select" [(ngModel)]="orderType">
+            <option value="market">Orden de mercado</option>
+            <option value="limit">Orden límite</option>
+            <option value="stop">Stop loss</option>
+            <option value="take_profit">Take profit</option>
+          </select>
+        </div>
+
+        <!-- Precio objetivo -->
+        <div class="mb-3" *ngIf="orderType !== 'market'">
+          <label for="precio" class="form-label">
+            Precio objetivo
+            <span *ngIf="orderType === 'limit'">(límite)</span>
+            <span *ngIf="orderType === 'stop'">(stop)</span>
+            <span *ngIf="orderType === 'take_profit'">(objetivo)</span>
+          </label>
+          <input
+            type="number"
+            id="precio"
+            class="form-control"
+            [(ngModel)]="targetPrice"
+            placeholder="Ej: 135.00"
+            min="0"
+          />
+        </div>
+
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="close()">Cancelar</button>
-        <button class="btn btn-primary" (click)="onConfirmar()">Confirmar</button>
+        <button type="button" class="btn btn-secondary" (click)="close()">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="confirmarOrden()">
+          Confirmar orden
+        </button>
       </div>
     </div>
   </div>

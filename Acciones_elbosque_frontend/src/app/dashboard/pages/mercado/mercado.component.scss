@@ -19,6 +19,16 @@
   padding-bottom: 40px;
 }
 
+iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+}
+
+.chart-candle {
+  height: 500px;
+}
+
 .dashboard-title {
   color: white;
   font-size: 45px;
