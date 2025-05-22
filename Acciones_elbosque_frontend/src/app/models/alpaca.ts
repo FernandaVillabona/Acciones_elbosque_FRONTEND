@@ -8,11 +8,12 @@ export interface AlpacaAsset {
   symbol: string;
   name: string;
   exchange: string;
+  asset_class: string;
+  status: string;
   tradable: boolean;
-  status?: string;
-  class?: string;
+  shortable: boolean;
+  marginable: boolean;
 }
-
 export interface AlpacaQuote {
   symbol?: string;         // si no viene, puedes quitarlo
   askPrice: number;

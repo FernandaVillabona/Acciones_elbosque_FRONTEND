@@ -14,6 +14,7 @@ import {CurrencyPipe, DatePipe, NgClass} from '@angular/common';
   styleUrl: './pages.component.css'
 })
 export class PagesComponent {
+  operaciones: any[] = [];
   constructor(private http: HttpClient) {}
 
 

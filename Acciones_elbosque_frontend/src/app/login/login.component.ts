@@ -39,53 +39,88 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    const { email, password } = this.loginForm.value;
-    console.log('Intentando login con:', { email });
-
-    this.userService.login(email, password).subscribe({
-      next: (response: any) => {
-        console.log('Login exitoso, respuesta:', response);
-        if (typeof response === 'string') {
-          // Si la respuesta es un string, probablemente sea el rol
-          this.requiresOtp = true;
-          this.emailForOtp = email;
-          localStorage.setItem('temp_rol', response);
-          alert('Se ha enviado un código de verificación a su correo electrónico');
-        } else {
-          // Si es un objeto, manejarlo según su estructura
-          this.requiresOtp = true;
-          this.emailForOtp = email;
-          if (response.rol) {
-            localStorage.setItem('temp_rol', response.rol);
-          }
-          alert('Se ha enviado un código de verificación a su correo electrónico');
-        }
-      },
-      error: (err) => {
-        console.error('Error en login:', err);
-        if (err.status === 200) {
-          // Si el status es 200 pero llegó como error, probablemente sea una respuesta válida
-          const response = err.error;
-          this.requiresOtp = true;
-          this.emailForOtp = email;
-          if (typeof response === 'string') {
-            localStorage.setItem('temp_rol', response);
-          } else if (response.rol) {
-            localStorage.setItem('temp_rol', response.rol);
-          }
-          alert('Se ha enviado un código de verificación a su correo electrónico');
-        } else {
-          this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
-        }
-      }
-    });
+onSubmit(): void {
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  const { email, password } = this.loginForm.value;
+  console.log('Intentando login con:', { email });
+
+  this.userService.login(email, password).subscribe({
+    next: (response: any) => {
+      console.log('Respuesta del login:', response);
+
+      // CASO 1: Requiere OTP
+      if (typeof response === 'string' || (response && response.requiereOtp)) {
+        this.requiresOtp = true;
+        this.emailForOtp = email;
+        localStorage.setItem('temp_rol', typeof response === 'string' ? response : response.rol);
+        alert('Se ha enviado un código de verificación a su correo electrónico');
+        return;
+      }
+
+      // CASO 2: Login tradicional exitoso
+      const rol = response.rol || 'Desconocido';
+      localStorage.setItem('rol', rol);
+      localStorage.setItem('token', 'temp-token-' + Date.now());
+
+      // Obtener datos completos del usuario
+      this.userService.getUserByEmail(email).subscribe({
+        next: (usuario) => {
+          localStorage.setItem('idUsuario', usuario.id);
+          localStorage.setItem('nombre', usuario.nombre);
+          localStorage.setItem('apellido', usuario.apellido);
+          localStorage.setItem('rol', usuario.rol);
+
+          switch (rol.trim()) {
+            case 'Trader':
+            case 'Traderz':
+              this.router.navigate(['/dashboard']);
+              break;
+            case 'Comisionista':
+              this.router.navigate(['/comisionista']);
+              break;
+            case 'Administrador':
+              this.router.navigate(['/admin']);
+              break;
+            case 'AreaLegal':
+              this.router.navigate(['/legal']);
+              break;
+            case 'JuntaDirectiva':
+              this.router.navigate(['/junta']);
+              break;
+            default:
+              this.errorMessage = 'Rol no reconocido: ' + rol;
+              break;
+          }
+        },
+        error: (err) => {
+          console.error('❌ No se pudo obtener el usuario por email:', err);
+          this.errorMessage = 'Error al obtener datos del usuario.';
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error en login:', err);
+      if (err.status === 200) {
+        // Interpretar el error como respuesta válida que requiere OTP
+        const response = err.error;
+        this.requiresOtp = true;
+        this.emailForOtp = email;
+        if (typeof response === 'string') {
+          localStorage.setItem('temp_rol', response);
+        } else if (response.rol) {
+          localStorage.setItem('temp_rol', response.rol);
+        }
+        alert('Se ha enviado un código de verificación a su correo electrónico');
+      } else {
+        this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+      }
+    }
+  });
+}
 
   verificarOtp(): void {
     if (!this.codigoOtp || !this.emailForOtp) {

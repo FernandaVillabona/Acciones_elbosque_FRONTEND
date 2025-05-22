@@ -41,4 +41,8 @@ export class OrderService {
       .set('limitPrice', limitPrice.toString());
     return this.http.post(`${this.baseUrl}/takeprofit`, null, { params });
   }
+
+  cancelOrder(orderId: string): Observable<any> {
+  return this.http.delete(`http://localhost:8080/api/orders/${orderId}`);
+}
 }

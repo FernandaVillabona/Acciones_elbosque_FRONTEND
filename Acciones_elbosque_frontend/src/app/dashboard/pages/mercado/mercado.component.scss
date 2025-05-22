@@ -25,9 +25,6 @@ iframe {
   border: none;
 }
 
-.chart-candle {
-  height: 500px;
-}
 
 .dashboard-title {
   color: white;
@@ -191,4 +188,123 @@ iframe {
   font-weight: 700;
   font-style: italic;
 }
+.order-info-card {
+  background: linear-gradient(135deg, #12141d 0%, #1c1f2c 50%, #2e3446 100%);
+  padding: 25px 30px;
+  margin-top: 20px;
+  border-radius: 16px;
+  color: #e0e0e0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
 
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0CA77D;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .order-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+
+  .order-desc {
+    margin: 6px 0 0;
+    font-size: 0.95rem;
+    color: #ccc;
+  }
+
+  .icon-market {
+    color: #0CA77D;
+    font-size: 1.5rem;
+    margin-top: 4px;
+  }
+
+  .icon-limit {
+    color: #FFD700;
+    font-size: 1.5rem;
+    margin-top: 4px;
+  }
+
+  .icon-stop {
+    color: #FF4C4C;
+    font-size: 1.5rem;
+    margin-top: 4px;
+  }
+
+  .icon-take {
+    color: #9370DB;
+    font-size: 1.5rem;
+    margin-top: 4px;
+  }
+
+  .text-success {
+    text-shadow: 0 0 4px #0CA77D;
+  }
+}
+
+.custom-tabs {
+  border: none !important;
+  gap: 1rem;
+
+  .nav-link {
+    background: #1c1f2c;
+    border: none;
+    color: #ccc;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 30px;
+    transition: background 0.3s, color 0.3s;
+
+    &:hover {
+      background: #2e3446;
+      color: #fff;
+    }
+
+    &.active {
+      background: #0CA77D;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 8px rgba(12, 167, 125, 0.6);
+    }
+  }
+}
+
+
+.balance-card {
+  background: linear-gradient(135deg, #12141d, #1c1f2c, #2e3446);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem 2rem;
+
+  .balance-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0ca77d;
+    text-shadow: 0 0 6px rgba(12, 167, 125, 0.4);
+  }
+
+  .balance-amount {
+    font-size: 40px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  }
+
+  .balance-subtext {
+    font-size: 18px;
+    color: #ccc;
+    font-weight: 500;
+
+    strong {
+      color: #0ca77d;
+    }
+  }
+}
