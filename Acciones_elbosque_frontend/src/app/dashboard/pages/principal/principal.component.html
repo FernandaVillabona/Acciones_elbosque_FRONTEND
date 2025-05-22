@@ -6,7 +6,7 @@
     <div class="title-underline"></div>
 
     <p class="welcome-message">
-      {{ getSaludo() }}, {{ nombreCompleto }} 👋  
+      {{ getSaludo() }}, {{ nombreCompleto }} 👋
     </p>
     <p class="sub-welcome-message">
       {{ getMensajePortafolio() }}
@@ -21,37 +21,109 @@
       </div>
     </div>
 
-    <!-- Tablas -->
+<!-- Snapshot del Portafolio -->
+<!-- Snapshot del Portafolio -->
+<div class="portfolio-snapshot-box py-4 px-3 mb-5 bg-white rounded shadow-sm">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="mb-1">Your portfolio</h5>
+      <h3>
+        {{ portfolioSnapshot?.equity | currency:'USD - $':'symbol':'1.2-2' }}
+        <span [ngClass]="dailyChangeClass" class="ms-2">
+          {{ portfolioSnapshot?.daily_change | number:'1.2-2' }}%
+        </span>
+      </h3>
+      <div class="text-muted small">
+        {{ currentTime }} -05
+      </div>
+    </div>
+    <div class="d-none d-md-block">
+      <div class="chart-container" style="width: 600px; height: 200px;">
+        <canvas
+          *ngIf="chartData?.labels?.length"
+          baseChart
+          [data]="chartData"
+          [options]="chartOptions"
+          chartType="line">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+    <div class="border p-3 rounded flex-fill text-center">
+      <div class="text-muted">Buying Power</div>
+      <div class="fw-bold text-success">
+        {{ portfolioSnapshot?.buying_power | currency:'USD - $':'symbol':'1.2-2' }}
+      </div>
+    </div>
+    <div class="border p-3 rounded flex-fill text-center">
+      <div class="text-muted">Cash</div>
+      <div class="fw-bold"
+           [ngClass]="portfolioSnapshot?.cash !== undefined && portfolioSnapshot?.cash! < 0 ? 'text-danger' : 'text-success'">
+        {{ portfolioSnapshot?.cash | currency:'USD - $':'symbol':'1.2-2' }}
+      </div>
+    </div>
+    <div class="border p-3 rounded flex-fill text-center">
+      <div class="text-muted">Daily Change</div>
+      <div class="fw-bold"
+           [ngClass]="dailyChangeClass">
+        {{ portfolioSnapshot?.daily_change | number:'1.2-2' }}%
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Sección de Tablas una debajo de la otra -->
     <div class="row g-4">
-      <!-- Órdenes no ejecutadas = Holdings -->
-      <div class="col-12 col-lg-6 d-flex">
-        <div class="data-box flex-fill">
-          <h5 class="table-title mb-3 d-flex justify-content-between align-items-center">
-            <span>
-              <i class="bi bi-hourglass-split me-2 text-warning"></i> Órdenes Pendientes
-            </span>
-            <span class="total-holdings-value" (click)="alternarMoneda()" style="cursor: pointer;">
-              {{ mostrarEnCOP
-                ? (valorTotalHoldings * 3850 | currency:'COP  -   $':'symbol':'1.0-0')
-                : (valorTotalHoldings | currency:'USD  -   $':'symbol':'1.0-0') }}
-            </span>
-          </h5>
+      <!-- Tabla Órdenes Pendientes -->
+ <div class="col-12 d-flex">
+  <div class="data-box flex-fill">
+    <h5 class="table-title mb-3 d-flex justify-content-between align-items-center">
+  <span>
+        <i class="bi bi-hourglass-split me-2 text-warning"></i> Órdenes Pendientes
+      </span>
+      <span class="total-holdings-badge" (click)="alternarMoneda()">
+        {{ mostrarEnCOP
+          ? (valorTotalHoldings * 3850 | currency:'COP - $':'symbol':'1.0-0')
+          : (valorTotalHoldings | currency:'USD - $':'symbol':'1.0-0') }}
+      </span>
+    </h5>
           <div class="table-responsive">
             <table class="table table-borderless holdings-table">
               <thead>
                 <tr>
                   <th>Acción</th>
-                  <th>Tipo</th>
+                  <th>Tipo de orden</th>
                   <th>Estado</th>
                   <th>Cantidad</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let holding of holdings">
-                  <td>{{ holding.accion }}</td>
-                  <td>{{ holding.tipo }}</td>
-                  <td>{{ holding.estado }}</td>
-                  <td>{{ holding.cantidad }}</td>
+                <tr *ngFor="let orden of holdings">
+                  <td>{{ orden.accion }}</td>
+                  <td>{{ orden.tipoOrden }}</td>
+                  <td>
+                    <span class="badge"
+                      [ngClass]="{
+                        'bg-warning text-dark': orden.estado === 'Pendiente',
+                        'bg-success': orden.estado === 'Ejecutada',
+                        'bg-secondary': orden.estado === 'Cancelada'
+                      }">
+                      {{ orden.estado }}
+                    </span>
+                  </td>
+                  <td>{{ orden.cantidad }}</td>
+                  <td>
+                    <button
+                      *ngIf="orden.estado === 'Pendiente'"
+                      class="btn btn-sm btn-outline-danger"
+                      >
+                      Cancelar
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -59,44 +131,89 @@
         </div>
       </div>
 
-      <!-- Órdenes ejecutadas = Historial -->
-      <div class="col-12 col-lg-6 d-flex">
-        <div class="data-box flex-fill">
-          <h5 class="table-title mb-3">
-            <i class="bi bi-clock-history me-2 icon-historial"></i>
-            Historial de operaciones (Órdenes Ejecutadas)
-          </h5>
-          <div class="table-responsive">
-            <table class="table table-borderless operations-table text-center">
-              <thead>
-                <tr>
-                  <th>Acción</th>
-                  <th>Tipo</th>
-                  <th>Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let operacion of operaciones"
-                  [ngClass]="{
-                    'row-compra': operacion.tipo.toLowerCase() === 'compra',
-                    'row-venta': operacion.tipo.toLowerCase() === 'venta'
-                  }"
-                >
-                  <td>{{ operacion.accion }}</td>
-                  <td [ngClass]="{
-                        'text-success': operacion.tipo === 'Compra',
-                        'text-danger': operacion.tipo === 'Venta'
-                      }">
-                    {{ operacion.tipo }}
-                  </td>
-                  <td>{{ operacion.fecha | date:'medium' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+      <!-- Tabla de Activos Disponibles -->
+<!-- Tabla de Posiciones Abiertas -->
+<div class="data-box flex-fill mt-5">
+  <h5 class="table-title mb-3 d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Posiciones Abiertas</span>
+    <a  class="text-decoration-none small">Ver todas</a>
+  </h5>
+
+  <div class="table-responsive">
+    <table class="table table-hover text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Asset</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Market Value</th>
+          <th>Total P/L ($)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pos of positions">
+          <td><strong>{{ pos.symbol }}</strong></td>
+          <td class="text-primary">
+            {{ pos.current_price || pos.avg_entry_price | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+          <td class="fw-bold">{{ pos.qty }}</td>
+          <td>{{ pos.market_value | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td [ngClass]="{
+                'text-success': pos.unrealized_pl > 0,
+                'text-danger': pos.unrealized_pl < 0
+              }">
+            {{ pos.unrealized_pl | currency:'USD':'symbol':'1.2-2' }}
+          </td>
+          <td>
+            <i class="bi bi-x-circle text-danger" style="cursor: pointer;" title="Cerrar posición"></i>
+          </td>
+        </tr>
+        <tr *ngIf="positions.length === 0">
+          <td colspan="6" class="text-muted">Sin posiciones abiertas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Tabla de Posiciones Cerradas -->
+<div class="data-box flex-fill mt-5">
+  <h5 class="table-title mb-3 d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-archive-fill me-2 text-secondary"></i>Posiciones Cerradas</span>
+  </h5>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Asset</th>
+          <th>Tipo</th>
+          <th>Side</th>
+          <th>Qty</th>
+          <th>Precio promedio</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pos of closedPositions">
+          <td><strong>{{ pos.symbol }}</strong></td>
+          <td>{{ pos.order_type }}</td>
+          <td [ngClass]="{
+                'text-success': pos.side === 'buy',
+                'text-danger': pos.side === 'sell'
+              }">
+            {{ pos.side }}
+          </td>
+          <td>{{ pos.qty }}</td>
+          <td>{{ pos.avg_fill_price | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pos.filled_at | date:'medium' }}</td>
+        </tr>
+        <tr *ngIf="closedPositions.length === 0">
+          <td colspan="6" class="text-muted">Sin posiciones cerradas.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

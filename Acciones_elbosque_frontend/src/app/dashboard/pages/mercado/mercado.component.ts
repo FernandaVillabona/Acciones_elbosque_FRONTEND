@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {AlpacaService} from '../../../services/alpaca.service';
 import {CommonModule} from '@angular/common';
 import {StockChartComponent} from '../../graficos/stock-chart/stock-chart.component';
@@ -17,8 +17,8 @@ declare var bootstrap: any; // Declare bootstrap globally
   standalone: true,
   templateUrl: './mercado.component.html',
   styleUrls: ['./mercado.component.scss'],
-  imports: [CommonModule, StockChartComponent, ModalCompraComponent, TvChartComponent] // ⬅️ esto es lo que faltaba
-  // ⬅️ esto es lo que faltaba
+  imports: [CommonModule, StockChartComponent, ModalCompraComponent, TvChartComponent], // <-- Add comma here
+  encapsulation: ViewEncapsulation.None
 })
 
 

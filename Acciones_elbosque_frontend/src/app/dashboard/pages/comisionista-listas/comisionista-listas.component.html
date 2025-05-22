@@ -1,49 +1,146 @@
-<div class="container mt-4">
-  <h2 style="color: white;">Seleccionar Comisionista</h2>
+<div class="container select-agent-container my-5">
+
+  <!-- Sección de introducción -->
+  <div class="bg-dark text-white rounded p-4 mb-4 shadow-sm">
+    <h2 class="mb-3">🤝 Conéctate con un Comisionista Experto</h2>
+    <p class="mb-0">
+      Nuestra plataforma te permite asociarte con un comisionista profesional que realizará <strong>compras y ventas de acciones por ti</strong>. 
+      Elige al mejor perfil para gestionar tu portafolio con experiencia y confianza.
+    </p>
+  </div>
+
+<!-- Tarjeta informativa de comisionistas -->
+<div class="container mb-5">
+  <h4 class="text-white mb-4">Comisionistas que marcan la diferencia</h4>
+
+  <div id="comisionistasCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+
+      <!-- Tarjeta centrada -->
+      <div class="carousel-item active">
+        <div class="card bg-dark text-white border-0 p-4 text-center" style="min-height: 400px;">
+          <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <img src="assets/comisionista2.jpg" alt="Comisionista" class="rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+            <h5 class="comisionista-nombre mb-2">Carlos Méndez</h5>
+           <p class="comisionista-descripcion mb-1">+10 años de experiencia en bolsa. Experto en análisis técnico y gestión de portafolios diversificados.</p>
+            <small class="comisionista-impacto">Ha ayudado a más de 200 usuarios a incrementar su patrimonio de forma segura.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta 2 (opcional) -->
+      <div class="carousel-item">
+        <div class="card bg-dark text-white border-0 p-4 text-center" style="min-height: 400px;">
+          <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <img src="assets/comisionista1.jpg" alt="Comisionista" class="rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+            <h5 class="comisionista-nombre mb-2">Laura García</h5>
+            <p class="comisionista-descripcion mb-1">Especialista en acciones tecnológicas y gestión de riesgo personalizado.</p>
+            <small class="comisionista-impacto">Reconocida por su enfoque estratégico y acompañamiento cercano.</small>
+          </div>
+        </div>
+      </div>
+
+       <!-- Tarjeta 3 -->
+          <div class="carousel-item">
+        <div class="card bg-dark text-white border-0 p-4 text-center" style="min-height: 400px;">
+          <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <img src="assets/comisionista4.jpg" alt="Ana Torres" class="rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+            <h5 class="comisionista-nombre mb-2">Ana Torres</h5>
+           <p class="comisionista-descripcion mb-1">Especialista en inversiones sostenibles y ESG. Asesora en estrategias a largo plazo con impacto positivo.</p>
+            <small class="comisionista-impacto">Con su ayuda, muchos usuarios han logrado invertir con propósito y rendimiento.</small>
+          </div>
+        </div>
+      </div>
+       <!-- Tarjeta 4  -->
+       <div class="carousel-item">
+        <div class="card bg-dark text-white border-0 p-4 text-center" style="min-height: 400px;">
+          <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <img src="assets/comisionista3.jpg" alt="Luis Fernández" class="rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+           <h5 class="comisionista-nombre mb-2">Luis Fernández</h5>
+           <p class="comisionista-descripcion mb-1">Trader certificado en mercados internacionales. Domina estrategias de alto rendimiento en acciones y futuros.</p>
+            <small class="comisionista-impacto">Ha acompañado a inversores en la toma de decisiones precisas y rentables.</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Controles del carrusel -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#comisionistasCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon bg-dark rounded-circle p-2"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#comisionistasCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon bg-dark rounded-circle p-2"></span>
+    </button>
+  </div>
+</div>
 
   <!-- Campo de búsqueda -->
-  <div class="mb-3">
+  <div class="mb-4">
     <input
       type="text"
-      class="form-control"
-      placeholder="Buscar por nombre, apellido o correo"
+      class="form-control form-control-lg bg-dark text-white border-secondary"
+      placeholder="🔍 Buscar por nombre, apellido o correo"
     />
   </div>
 
   <!-- Tabla de comisionistas -->
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-    <tr>
-      <th>Seleccionar</th>
-      <th>Nombre completo</th>
-      <th>Correo electrónico</th>
-      <th>Teléfono</th>
-    </tr>
+  <!-- Tabla de comisionistas -->
+<div class="table-responsive mt-5">
+  <table class="table table-dark table-hover table-bordered align-middle rounded">
+    <thead class="table-light text-dark">
+      <tr>
+        <th>✅ Seleccionar</th>
+        <th>👤 Nombre completo</th>
+        <th>📧 Correo electrónico</th>
+        <th>📞 Teléfono</th>
+      </tr>
     </thead>
     <tbody>
-    <tr>
-      <td>
-        <input type="radio" name="comisionistaSeleccionado" />
-      </td>
-      <td>Juan Pérez</td>
-      <td>juan.perez.com</td>
-      <td>555-1234</td>
-    </tr>
-    <tr>
-      <td>
-        <input type="radio" name="comisionistaSeleccionado" />
-      </td>
-      <td>María Gómez</td>
-      <td>maria.gomez</td>
-      <td>555-5678</td>
-    </tr>
-    <!-- Puedes agregar más filas según sea necesario -->
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td>Juan Pérez</td>
+        <td>juan.perez&#64;example.com</td>
+        <td>555-1234</td>
+      </tr>
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td>María Gómez</td>
+        <td>maria.gomez&#64;example.com</td>
+        <td>555-5678</td>
+      </tr>
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td><strong>Carlos Méndez</strong></td>
+        <td>carlos.mendez&#64;finanzasegura.com</td>
+        <td>555-7890</td>
+      </tr>
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td><strong>Laura García</strong></td>
+        <td>laura.garcia&#64;accionestrade.com</td>
+        <td>555-2345</td>
+      </tr>
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td><strong>Ana Torres</strong></td>
+        <td>ana.torres&#64;inversionesverdes.com</td>
+        <td>555-3344</td>
+      </tr>
+      <tr>
+        <td><input type="radio" name="comisionistaSeleccionado" /></td>
+        <td><strong>Luis Fernández</strong></td>
+        <td>luis.fernandez&#64;globaltraders.com</td>
+        <td>555-7788</td>
+      </tr>
     </tbody>
   </table>
-
-  <!-- Botón para asociar -->
-  <button class="btn btn-primary">
-    Asociar
-  </button>
 </div>
 
+  <!-- Botón para asociar -->
+  <div class="text-end mt-4">
+    <button class="btn btn-success btn-lg px-5">
+      🔗 Asociar Comisionista
+    </button>
+  </div>
+</div>

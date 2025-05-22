@@ -84,4 +84,8 @@ export class UserService {
     return `${year}-${month}-${day}`;
   }
 
+getUserByEmail(email: string): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/by-email/${encodeURIComponent(email)}`);
+}
+
 }

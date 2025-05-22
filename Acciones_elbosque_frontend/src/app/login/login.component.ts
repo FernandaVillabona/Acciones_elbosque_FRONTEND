@@ -40,50 +40,65 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    const { email, password } = this.loginForm.value;
-    console.log('Intentando login con:', { email });
-
-    this.userService.login(email, password).subscribe({
-      next: (rol: string) => {
-        console.log('Login exitoso, rol recibido:', rol);
-        // Guardar el rol y un token temporal en localStorage
-        localStorage.setItem('rol', rol);
-        localStorage.setItem('token', 'temp-token-' + Date.now());
-
-        // Redirigir según el rol
-        switch (rol.trim()) {
-          case 'Trader':
-          case 'Traderz':
-            this.router.navigate(['/dashboard']);
-            break;
-          case 'Comisionista':
-            this.router.navigate(['/comisionista']);
-            break;
-          case 'Administrador':
-            this.router.navigate(['/admin']);
-            break;
-          case 'AreaLegal':
-            this.router.navigate(['/legal']);
-            break;
-          case 'JuntaDirectiva':
-            this.router.navigate(['/junta']);
-            break;
-          default:
-            this.errorMessage = 'Rol no reconocido: ' + rol;
-            break;
-        }
-      },
-      error: (err) => {
-        console.error('Error en login:', err);
-        this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
-      }
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  const { email, password } = this.loginForm.value;
+  console.log('Intentando login con:', { email });
+
+  this.userService.login(email, password).subscribe({
+    next: (rol: string) => {
+      console.log('Login exitoso, rol recibido:', rol);
+
+      // Guardar el rol y un token temporal
+      localStorage.setItem('rol', rol);
+      localStorage.setItem('token', 'temp-token-' + Date.now());
+
+      // 🔁 Obtener datos completos del usuario
+      this.userService.getUserByEmail(email).subscribe({
+  next: (usuario) => {
+    localStorage.setItem('idUsuario', usuario.id);
+    localStorage.setItem('nombre', usuario.nombre);
+    localStorage.setItem('apellido', usuario.apellido);
+    localStorage.setItem('rol', usuario.rol);
+
+          // Redirigir según el rol
+          switch (rol.trim()) {
+            case 'Trader':
+            case 'Traderz':
+              this.router.navigate(['/dashboard']);
+              break;
+            case 'Comisionista':
+              this.router.navigate(['/comisionista']);
+              break;
+            case 'Administrador':
+              this.router.navigate(['/admin']);
+              break;
+            case 'AreaLegal':
+              this.router.navigate(['/legal']);
+              break;
+            case 'JuntaDirectiva':
+              this.router.navigate(['/junta']);
+              break;
+            default:
+              this.errorMessage = 'Rol no reconocido: ' + rol;
+              break;
+          }
+        },
+        error: err => {
+          console.error('❌ No se pudo obtener el usuario por email:', err);
+          this.errorMessage = 'Error al obtener datos del usuario.';
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error en login:', err);
+      this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+    }
+  });
+}
 
   verificarOtp(): void {
     if (!this.codigoOtp || !this.emailForOtp) {

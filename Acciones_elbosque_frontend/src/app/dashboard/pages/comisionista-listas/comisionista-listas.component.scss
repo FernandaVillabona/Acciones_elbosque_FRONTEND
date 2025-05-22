@@ -1,0 +1,73 @@
+.select-agent-container {
+  background: linear-gradient(135deg, #1a1a2e, #16222a);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+
+  .form-control {
+    border-radius: 12px;
+  }
+
+  .table {
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 1rem;
+  }
+
+  .table thead th {
+    font-weight: 700;
+    font-size: 1.1rem;
+    background-color: #f8f9fa;
+    color: #212529;
+  }
+
+  .btn-success {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .expert-card {
+    background: linear-gradient(135deg, #f0f0f0, #ffffff);
+    border-left: 6px solid #0ca77d;
+  }
+}
+
+.carousel .card {
+  background: linear-gradient(135deg, #1c1f2c, #2e3446);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #0CA77D;
+  border-radius: 50%;
+}
+
+.comisionista-nombre {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0CA77D; 
+}
+
+.comisionista-descripcion {
+  color: #dddddd;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.comisionista-impacto {
+  color: #bbbbbb;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 5px;
+}
+
+.comisionista-foto {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border: 4px solid #0CA77D;
+  padding: 2px;
+  box-shadow: 0 0 10px rgba(12, 167, 125, 0.3);
+}

@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {NgForOf} from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
 import {AlpacaService} from '../../../services/alpaca.service';
 import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-venta',
-  imports: [
+  imports: [CommonModule,
     NgForOf
   ],
   templateUrl: './venta.component.html',
   standalone: true,
-  styleUrl: './venta.component.css'
+  styleUrl: './venta.component.scss'
 })
 export class VentaComponent {
   accionesHold : any[] = [];
@@ -55,9 +55,18 @@ export class VentaComponent {
         alert(`✅ Venta de ${cantidad} ${symbol} exitosa.`);
       },
       error: (err) => {
-        alert('❌ Error en la compra');
-        console.error(err);
-      }
+  const mensaje = err?.error;
+
+  // Verifica si es un rechazo de Alpaca por wash trade
+  if (mensaje && typeof mensaje === 'string' && mensaje.includes('wash trade')) {
+    alert('🚫 No se puede ejecutar esta orden: ya existe una orden opuesta activa (wash trade detectado). Por favor, cancela la orden opuesta primero.');
+  } else {
+    alert('❌ Error al realizar la venta. Intenta más tarde.');
+  }
+
+  console.error('Detalles del error:', err);
+}
+      
     });
   }
 
