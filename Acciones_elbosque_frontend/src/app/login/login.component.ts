@@ -39,7 +39,7 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
+onSubmit(): void {
   if (this.loginForm.invalid) {
     this.loginForm.markAllAsTouched();
     return;
@@ -49,22 +49,31 @@ export class LoginComponent {
   console.log('Intentando login con:', { email });
 
   this.userService.login(email, password).subscribe({
-    next: (rol: string) => {
-      console.log('Login exitoso, rol recibido:', rol);
+    next: (response: any) => {
+      console.log('Respuesta del login:', response);
 
-      // Guardar el rol y un token temporal
+      // CASO 1: Requiere OTP
+      if (typeof response === 'string' || (response && response.requiereOtp)) {
+        this.requiresOtp = true;
+        this.emailForOtp = email;
+        localStorage.setItem('temp_rol', typeof response === 'string' ? response : response.rol);
+        alert('Se ha enviado un código de verificación a su correo electrónico');
+        return;
+      }
+
+      // CASO 2: Login tradicional exitoso
+      const rol = response.rol || 'Desconocido';
       localStorage.setItem('rol', rol);
       localStorage.setItem('token', 'temp-token-' + Date.now());
 
-      // 🔁 Obtener datos completos del usuario
+      // Obtener datos completos del usuario
       this.userService.getUserByEmail(email).subscribe({
-  next: (usuario) => {
-    localStorage.setItem('idUsuario', usuario.id);
-    localStorage.setItem('nombre', usuario.nombre);
-    localStorage.setItem('apellido', usuario.apellido);
-    localStorage.setItem('rol', usuario.rol);
+        next: (usuario) => {
+          localStorage.setItem('idUsuario', usuario.id);
+          localStorage.setItem('nombre', usuario.nombre);
+          localStorage.setItem('apellido', usuario.apellido);
+          localStorage.setItem('rol', usuario.rol);
 
-          // Redirigir según el rol
           switch (rol.trim()) {
             case 'Trader':
             case 'Traderz':
@@ -87,7 +96,7 @@ export class LoginComponent {
               break;
           }
         },
-        error: err => {
+        error: (err) => {
           console.error('❌ No se pudo obtener el usuario por email:', err);
           this.errorMessage = 'Error al obtener datos del usuario.';
         }
@@ -95,7 +104,20 @@ export class LoginComponent {
     },
     error: (err) => {
       console.error('Error en login:', err);
-      this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+      if (err.status === 200) {
+        // Interpretar el error como respuesta válida que requiere OTP
+        const response = err.error;
+        this.requiresOtp = true;
+        this.emailForOtp = email;
+        if (typeof response === 'string') {
+          localStorage.setItem('temp_rol', response);
+        } else if (response.rol) {
+          localStorage.setItem('temp_rol', response.rol);
+        }
+        alert('Se ha enviado un código de verificación a su correo electrónico');
+      } else {
+        this.errorMessage = 'Error al iniciar sesión. Por favor, intente nuevamente.';
+      }
     }
   });
 }
@@ -113,32 +135,45 @@ export class LoginComponent {
 
     this.otpService.verificarOtp(payload).subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('idUsuario', res.id);
-        localStorage.setItem('rol', res.rol);
-        localStorage.setItem('nombre', res.nombre);
+        // Después de verificar OTP, obtener el rol
+        const password = this.loginForm.get('password')?.value;
+        this.userService.obtenerRol(this.emailForOtp, password).subscribe({
+          next: (rol: string) => {
+            console.log('Rol obtenido:', rol);
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('idUsuario', res.id);
+            localStorage.setItem('rol', rol);
+            localStorage.setItem('nombre', res.nombre);
 
-        // Redirigir según el rol
-        switch (res.rol) {
-          case 'Trader':
-            this.router.navigate(['/dashboard']);
-            break;
-          case 'Comisionista':
-            this.router.navigate(['/comisionista']);
-            break;
-          case 'Administrador':
-            this.router.navigate(['/admin']);
-            break;
-          case 'AreaLegal':
-            this.router.navigate(['/legal']);
-            break;
-          case 'JuntaDirectiva':
-            this.router.navigate(['/junta']);
-            break;
-          default:
-            alert('Rol no reconocido');
-            break;
-        }
+            // Redirigir según el rol
+            switch (rol.trim()) {
+              case 'Trader':
+              case 'Traderz':
+                this.router.navigate(['/dashboard']);
+                break;
+              case 'Comisionista':
+                this.router.navigate(['/comisionista']);
+                break;
+              case 'Administrador':
+                this.router.navigate(['/admin']);
+                break;
+              case 'AreaLegal':
+                this.router.navigate(['/legal']);
+                break;
+              case 'JuntaDirectiva':
+                this.router.navigate(['/junta']);
+                break;
+              default:
+                console.error('Rol no reconocido:', rol);
+                alert('Rol no reconocido: ' + rol);
+                break;
+            }
+          },
+          error: (err) => {
+            console.error('Error al obtener rol:', err);
+            alert('Error al obtener el rol del usuario');
+          }
+        });
       },
       error: (err) => {
         alert('Código inválido o expirado');
