@@ -56,16 +56,16 @@ export class AlpacaService {
     .pipe(catchError(this.handle));
 }
 
-placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: number): Observable<string> {
-  const params = {
-    symbol,
-    qty,
-    side,
-    idUsuario
-  };
-  return this.http.post(`http://localhost:8080/api/ordenes/market`, null, { params, responseType: 'text' })
-    .pipe(catchError(this.handle));
-}
+  placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell',idUsuario: number): Observable<string> {
+    const params = {
+      symbol,
+      qty,
+      side,
+      idUsuario
+    };
+    return this.http.post(`http://localhost:8080/api/orders/market`, null, { params, responseType: 'text' })
+      .pipe(catchError(this.handle));
+  }
 
   placeMarketOrderSell(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: number , time:string): Observable<string> {
     const params = {
@@ -75,7 +75,7 @@ placeMarketOrder(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: n
       idUsuario,
       time
     };
-    return this.http.post(`http://localhost:8080/api/ordenes/market/sell`, null, { params, responseType: 'text' })
+    return this.http.post(`http://localhost:8080/api/orders/market/sell`, null, { params, responseType: 'text' })
       .pipe(catchError(this.handle));
   }
 }
