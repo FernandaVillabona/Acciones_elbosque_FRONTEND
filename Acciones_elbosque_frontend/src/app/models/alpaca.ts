@@ -14,7 +14,7 @@ export interface AlpacaAsset {
 }
 
 export interface AlpacaQuote {
-  symbol: string;
+  symbol?: string;         // si no viene, puedes quitarlo
   askPrice: number;
   bidPrice: number;
   askSize?: number;
@@ -46,3 +46,4 @@ export interface CandleData {
   low: number;
   close: number;
 }
+
