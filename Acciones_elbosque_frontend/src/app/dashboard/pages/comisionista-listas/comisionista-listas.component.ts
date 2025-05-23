@@ -11,7 +11,7 @@ import {log} from '@angular-devkit/build-angular/src/builders/ssr-dev-server';
   ],
   templateUrl: './comisionista-listas.component.html',
   standalone: true,
-  styleUrl: './comisionista-listas.component.css'
+  styleUrl: './comisionista-listas.component.scss'
 })
 export class ComisionistaListasComponent {
   comisionistas : any[] = [];

@@ -9,49 +9,139 @@
 </div>
 
 <!-- Balance -->
-<div *ngIf="balance" class="card my-3 shadow-sm text-white" style="background: linear-gradient(135deg, #1c1f2c, #2e3446); border-radius: 15px;">
+<div *ngIf="balance" class="balance-card card text-white shadow-sm mb-4">
   <div class="card-body">
-    <h5 class="card-title mb-0">Balance de la cuenta</h5>
-    <p class="fs-4 mb-1">{{ balance.equity | currency:'USD' }}</p>
-    <small>Efectivo disponible: {{ balance.cash | currency:'USD' }}</small>
+    <h4 class="balance-title">
+      💼 Balance de la cuenta
+    </h4>
+    <div class="balance-amount mt-3">
+      {{ balance.equity | currency: 'USD' }}
+    </div>
+    <div class="balance-subtext mt-1">
+      <i class="bi bi-cash-stack me-2 text-success"></i>
+      Efectivo disponible:
+      <strong>{{ balance.cash | currency: 'USD' }}</strong>
+    </div>
   </div>
 </div>
 
+<!-- Instrucciones de tipos de órdenes -->
+<!-- Instrucciones de tipos de órdenes -->
+<div class="order-info-card">
+  <h5 class="card-title">
+    <i class="bi bi-journal-text me-2 text-info"></i> ¿Cómo funcionan las órdenes?
+  </h5>
+
+  <div class="order-item">
+    <i class="bi bi-lightning-charge-fill icon-market"></i>
+    <div>
+      <strong>Orden de Mercado (Market):</strong>
+      <p class="order-desc">Compra o venta inmediata al mejor precio disponible.</p>
+    </div>
+  </div>
+
+  <div class="order-item">
+    <i class="bi bi-sliders icon-limit"></i>
+    <div>
+      <strong>Orden Límite (Limit):</strong>
+      <p class="order-desc">Ejecuta solo si el mercado alcanza un precio específico.</p>
+    </div>
+  </div>
+
+  <div class="order-item">
+    <i class="bi bi-shield-exclamation icon-stop"></i>
+    <div>
+      <strong>Stop Loss:</strong>
+      <p class="order-desc">Vende automáticamente si el precio cae a un nivel crítico.</p>
+    </div>
+  </div>
+
+  <div class="order-item">
+    <i class="bi bi-trophy-fill icon-take"></i>
+    <div>
+      <strong>Take Profit:</strong>
+      <p class="order-desc">Cierra la posición si el precio sube y alcanza un objetivo de ganancia.</p>
+    </div>
+  </div>
+
+  <p class="fw-bold mt-4 text-white" style="font-size: 1.2rem;">
+    Selecciona el tipo de orden al hacer clic en <span class="text-success">“Hacer orden”</span> y define tu estrategia.
+  </p>
+</div>
 <!-- Activos disponibles -->
-<h4 class="mt-4 text-white">Activos disponibles</h4>
+
+
+<!-- Espaciado visual -->
+<div class="my-5"></div>
+
+<!-- Tabs -->
+<ul class="custom-tabs nav nav-tabs justify-content-start mb-4">
+  <li class="nav-item">
+    <button
+      class="nav-link"
+      [class.active]="viewMode === 'mini'"
+      (click)="viewMode = 'mini'"
+    >
+      📊 Activos disponibles
+    </button>
+  </li>
+  <li class="nav-item">
+    <button
+      class="nav-link"
+      [class.active]="viewMode === 'candlestick'"
+      (click)="viewMode = 'candlestick'"
+    >
+      📈 Velas (Candlestick)
+    </button>
+  </li>
+</ul>
 
 <div class="row mt-3">
-  <div class="col-md-6 col-lg-4 mb-4" *ngFor="let a of assets">
-    <div class="card h-100 shadow-sm text-white" style="background: linear-gradient(135deg, #1c1f2c, #2e3446); border-radius: 15px;">
-      <div class="card-body">
+  <div class="col-md-6 col-lg-6 mb-4" *ngFor="let a of assets">
+    <div class="card h-100 shadow-sm text-white"
+         style="background: linear-gradient(135deg, #1c1f2c, #2e3446); border-radius: 15px;">
+      <div class="card-body" style="min-height: 500px">
         <h5 class="card-title">{{ a.symbol }}</h5>
         <p class="card-text mb-2">
           {{ a.name }}<br />
           <small class="text-muted">{{ a.exchange }}</small>
         </p>
+       <p class="card-text mb-1">
+  Precio actual: 
+  <strong *ngIf="symbolPrices[a.symbol] as price">
+    {{ price | currency:'USD' }}
+  </strong>
+</p>
 
-        <!-- Gráfico embebido (TradingView) -->
-        <iframe
-          [src]="getChartUrl(a.symbol)"
-          width="100%"
-          height="200"
-          frameborder="0"
-          allowtransparency="true"
-          scrolling="no"
-          style="border: none;">
-        </iframe>
-
-         <!-- Botones de acción -->
-        <div class="d-flex justify-content-between mt-3">
-         <button class="btn btn-sm btn-success mt-3 w-100" (click)="abrirModalCompra(a.symbol)">
-  🛒 Comprar
-</button>
+        <!-- Gráfico MINI SOLO si está en modo mini -->
+<div [hidden]="viewMode !== 'mini'">
+<iframe
+  *ngIf="symbolChartUrls[a.symbol]"
+  [src]="symbolChartUrls[a.symbol]"
+  width="100%"
+  height="300"
+  frameborder="0"
+  style="display: block; border: none;"
+></iframe>
         </div>
 
+   <!-- Gráfico de VELAS: siempre vive en el DOM, pero solo se muestra cuando viewMode === 'candlestick' -->
+<div [hidden]="viewMode !== 'candlestick'">
+  <app-tv-chart [symbol]="a.symbol"></app-tv-chart>
+</div>
+        <!-- Botón de compra (se muestra siempre) -->
+        <div class="d-flex justify-content-between mt-3">
+          <button
+  class="btn btn-sm btn-success mt-3 w-100"
+  (click)="abrirModalCompra(a.symbol)">
+  🛒 Hacer orden
+</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 <app-modal-compra
   [symbol]="symbolSeleccionado"
   (confirmar)="onConfirmarCompra($event)">

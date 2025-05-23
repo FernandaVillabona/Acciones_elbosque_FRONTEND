@@ -1,10 +1,14 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {AlpacaService} from '../../../services/alpaca.service';
 import {CommonModule} from '@angular/common';
 import {StockChartComponent} from '../../graficos/stock-chart/stock-chart.component';
 import {AccountBalance, AlpacaAsset, AlpacaPosition, AlpacaQuote} from '../../../models/alpaca';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {ModalCompraComponent} from "../modals/modal-compra/modal-compra.component";
+import { TvChartComponent } from '../../components/tv-chart/tv-chart.component';
+import { IframeCacheService } from '../../../services/framecache/iframe-cache.service';
+import { OrderService } from '../../../services/orden.service';
+
 
 declare var bootstrap: any; // Declare bootstrap globally
 
@@ -13,8 +17,8 @@ declare var bootstrap: any; // Declare bootstrap globally
   standalone: true,
   templateUrl: './mercado.component.html',
   styleUrls: ['./mercado.component.scss'],
-  imports: [CommonModule, StockChartComponent, ModalCompraComponent] // ⬅️ esto es lo que faltaba
-  // ⬅️ esto es lo que faltaba
+  imports: [CommonModule, StockChartComponent, ModalCompraComponent, TvChartComponent], // <-- Add comma here
+  encapsulation: ViewEncapsulation.None
 })
 
 
@@ -30,76 +34,86 @@ export class MercadoComponent implements OnInit {
   selectedSymbol: string | null = null;
   selectedCandles: any[] = [];
 
+  
+
+  symbolsPermitidos: string[] = [
+  'AAPL', 'MSFT', 'TSLA', 'GOOGL', 'AMZN',
+  'META', 'NVDA', 'AMD', 'INTC', 'NFLX'
+];
+symbolChartUrls: { [symbol: string]: SafeResourceUrl } = {};
   symbolSeleccionado: string = '';
   cantidad: number = 1;
+symbolCandlestickUrls: { [symbol: string]: SafeResourceUrl } = {};
+symbolPrices: { [symbol: string]: number } = {};
+  viewMode: 'mini' | 'candlestick' = 'mini';
 
+
+  chartUrl: SafeResourceUrl | null = null;
 
   @ViewChild(ModalCompraComponent) modalCompra!: ModalCompraComponent;
 
-  constructor(private alpaca: AlpacaService, private sanitizer: DomSanitizer
+  constructor(   private orderService: OrderService, private iframeCache: IframeCacheService, private alpaca: AlpacaService, private sanitizer: DomSanitizer
   ) {
   }
 
-  abrirModalCompra(symbol: string): void {
-    this.symbolSeleccionado = symbol;
-    this.cantidad = 1;
-
-    const modalElement = document.getElementById('modalCompra');
-    if (modalElement) {
-      const modalInstance = new bootstrap.Modal(modalElement); // Corrected 'boostrap' to 'bootstrap'
-      modalInstance.show();
-    }
-  }
-
-  onConfirmarCompra(cantidad: number): void {
-    const idUsuario = Number(localStorage.getItem('idUsuario'));
-    if (cantidad < 1) {
-      alert('Datos inválidos');
-      return;
-    }
-
-    this.alpaca.placeMarketOrder(this.symbolSeleccionado, cantidad, 'buy', idUsuario).subscribe({
-      next: (res) => {
-        alert(`✅ Compra de ${cantidad} ${this.symbolSeleccionado} exitosa.`);
-      },
-      error: (err) => {
-        alert('❌ Error en la compra');
-        console.error(err);
-      }
-    });
-  }
+  
+abrirModalCompra(symbol: string): void {
+  this.symbolSeleccionado = symbol;
+  this.modalCompra.open();
+}
 
 
-  ngOnInit(): void {
-    this.loadAlpacaData();
-  }
 
-  private loadAlpacaData(): void {
-    this.loading = true;
-    this.uiMessage = null;
 
-    const symbolsPermitidos = ['AAPL', 'MSFT', 'TSLA', 'GOOGL', 'AMZN', 'META', 'NVDA', 'AMD', 'INTC', 'NFLX'];
+ngOnInit(): void {
+  this.loadAlpacaData();
+}
 
-    Promise.all([
-      this.alpaca.getBalance().toPromise(),
-      this.alpaca.getAssets().toPromise(),
-      this.alpaca.getQuote('AAPL').toPromise(),
-      this.alpaca.getPositions().toPromise()
-    ])
-      .then(([balance, assets, quote, positions]) => {
-        this.balance = balance;
-        this.assets = (assets || []).filter(a => symbolsPermitidos.includes(a.symbol));
-        this.quote = quote;
-        this.positions = positions || [];
-      })
-      .catch(error => {
-        console.error('Error cargando datos de Alpaca:', error);
-        this.uiMessage = error.message || 'Error al cargar datos del mercado';
-      })
-      .finally(() => {
-        this.loading = false;
+
+  loadAlpacaData(): void {
+  this.loading = true;
+  this.uiMessage = null;
+
+  const symbolsPermitidos = ['AAPL', 'MSFT', 'TSLA', 'GOOGL', 'AMZN', 'META', 'NVDA', 'AMD', 'INTC', 'NFLX'];
+
+  Promise.all([
+    this.alpaca.getBalance().toPromise(),
+    this.alpaca.getAssets().toPromise(),
+    this.alpaca.getPositions().toPromise()
+  ])
+    .then(([balance, assets, positions]) => {
+      this.balance = balance;
+      this.assets = (assets || []).filter(a => symbolsPermitidos.includes(a.symbol));
+      this.positions = positions || [];
+
+      // ✅ Aquí precalculas las URLs de gráfico mini
+      this.assets.forEach(asset => {
+        const url = `https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=NASDAQ:${asset.symbol}&locale=es&dateRange=1D&colorTheme=dark&autosize=true`;
+        this.symbolChartUrls[asset.symbol] = this.sanitizer.bypassSecurityTrustResourceUrl(url);
       });
-  }
+
+      // ✅ Aquí traes el precio actual por símbolo
+      this.assets.forEach(asset => {
+       this.alpaca.getQuote(asset.symbol).subscribe(quote => {
+  // Puedes elegir cuál mostrar: el ask, el bid o el promedio
+  const price = (quote.askPrice + quote.bidPrice) / 2; // 🧠 más realista
+  this.symbolPrices[asset.symbol] = price;
+});
+      });
+    })
+    .catch(error => {
+      console.error('Error cargando datos de Alpaca:', error);
+      this.uiMessage = error.message || 'Error al cargar datos del mercado';
+    })
+    .finally(() => {
+      this.loading = false;
+    });
+}
+
+getChartUrl(symbol: string): SafeResourceUrl {
+  const rawUrl = this.iframeCache.getChartUrl(symbol);
+  return this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
+}
 
   loadChart(symbol: string): void {
     const today = new Date();
@@ -120,11 +134,7 @@ export class MercadoComponent implements OnInit {
     });
   }
 
-  getChartUrl(symbol: string): SafeResourceUrl {
-    const tvSymbol = `NASDAQ:${symbol.toUpperCase()}`;
-    const url = `https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=${tvSymbol}&locale=es&dateRange=1D&colorTheme=dark&autosize=true`;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-  }
+
 
   comprarActivo(symbol: string) {
     const idUsuario = Number(localStorage.getItem('idUsuario'));
@@ -151,4 +161,54 @@ export class MercadoComponent implements OnInit {
       }
     });
   }
+
+getCandlestickChartUrl(symbol: string): SafeResourceUrl {
+  const tvSymbol = `NASDAQ:${symbol.toUpperCase()}`;
+  const url = `https://s.tradingview.com/embed-widget/advanced-chart/?symbol=${tvSymbol}&interval=D&theme=dark&style=1&locale=es&autosize=false&width=700&height=700`;
+  return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+}
+
+onConfirmarCompra(orden: {
+  symbol: string;
+  qty: number;
+  side: 'buy' | 'sell';
+  type: 'market' | 'limit' | 'stop' | 'take_profit';
+  targetPrice?: number | null;
+}): void {
+  switch (orden.type) {
+    case 'market':
+      this.orderService.placeMarketOrder(orden.symbol, orden.qty, orden.side).subscribe({
+        next: res => alert(`✅ Orden de mercado ejecutada: ${orden.symbol}`),
+        error: err => alert('❌ Error ejecutando orden de mercado')
+      });
+      break;
+
+    case 'limit':
+      if (!orden.targetPrice) return alert('⚠️ Precio límite requerido');
+      this.orderService.placeLimitOrder(orden.symbol, orden.qty, orden.targetPrice).subscribe({
+        next: res => alert(`✅ Orden límite enviada: ${orden.symbol}`),
+        error: err => alert('❌ Error en orden límite')
+      });
+      break;
+
+    case 'stop':
+      if (!orden.targetPrice) return alert('⚠️ Precio de stop requerido');
+      this.orderService.placeStopLossOrder(orden.symbol, orden.qty, orden.side, orden.targetPrice).subscribe({
+        next: res => alert(`✅ Stop loss enviado para ${orden.symbol}`),
+        error: err => alert('❌ Error en orden stop loss')
+      });
+      break;
+
+    case 'take_profit':
+      if (!orden.targetPrice) return alert('⚠️ Precio de ganancia requerido');
+      this.orderService.placeTakeProfitOrder(orden.symbol, orden.qty, orden.side, orden.targetPrice).subscribe({
+        next: res => alert(`✅ Take profit enviado para ${orden.symbol}`),
+        error: err => alert('❌ Error en orden take profit')
+      });
+      break;
+
+    default:
+      alert('❌ Tipo de orden no reconocido');
+  }
+}
 }

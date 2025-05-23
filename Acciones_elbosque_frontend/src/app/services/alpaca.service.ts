@@ -2,6 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+export interface PortfolioSnapshot {
+  equity: number;
+  cash: number;
+  buying_power: number;
+  daily_change: number;
+  historical_equity: {
+    timestamp: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+  }[];
+}
 
 export const environment = {
   production: false,
@@ -31,17 +44,28 @@ export class AlpacaService {
     return this.http.get<AlpacaAsset[]>(`${this.base}/assets`)
       .pipe(catchError(this.handle));
   }
+getAvailableAssets(): Observable<AlpacaAsset[]> {
+  return this.http.get<AlpacaAsset[]>(`${this.base}/assets`)
+    .pipe(catchError(this.handle));
+}
 
   getQuote(symbol: string): Observable<AlpacaQuote> {
     return this.http.get<AlpacaQuote>(`${this.base}/quote/${symbol}`)
       .pipe(catchError(this.handle));
   }
 
-  getPositions(): Observable<AlpacaPosition[]> {
-    return this.http.get<AlpacaPosition[]>(`${this.base}/positions`)
-      .pipe(catchError(this.handle));
-  }
+ getPositions(): Observable<any[]> {
+  return this.http.get(`${this.base}/positions`, { responseType: 'text' })
+    .pipe(
+      map(response => JSON.parse(response)), // parsea manualmente el JSON
+      catchError(this.handle)
+    );
+}
 
+getClosedPositions(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.base}/operaciones-ejecutadas`)
+    .pipe(catchError(this.handle));
+}
   // ————————————————————————————
   private handle(error: HttpErrorResponse) {
     console.error('[AlpacaService]', error);
@@ -78,4 +102,10 @@ export class AlpacaService {
     return this.http.post(`http://localhost:8080/api/orders/market/sell`, null, { params, responseType: 'text' })
       .pipe(catchError(this.handle));
   }
+
+getPortfolioSnapshot(): Observable<PortfolioSnapshot> {
+  return this.http.get<PortfolioSnapshot>('http://localhost:8080/api/alpaca/portfolio-snapshot');
 }
+}
+
+

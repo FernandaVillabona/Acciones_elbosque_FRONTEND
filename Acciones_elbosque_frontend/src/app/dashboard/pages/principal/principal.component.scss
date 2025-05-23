@@ -11,7 +11,32 @@
 body {
   overflow-y: auto;
 }
+.valor-holdings {
+  color: #0CA77D;
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: -10px;
+  margin-left: 4px;
+  text-shadow: 0 0 8px rgba(12, 167, 125, 0.6);
+  font-family: 'Alegreya Sans', sans-serif;
+}
 
+.total-holdings-badge {
+  font-size: 30px;
+  font-weight: 600;
+  color: #0CA77D;
+  background-color: rgba(12, 167, 125, 0.1);
+  padding: 6px 14px;
+  border-radius: 12px;
+  text-shadow: 0 0 10px rgba(12, 167, 125, 0.5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.total-holdings-badge:hover {
+  background-color: rgba(12, 167, 125, 0.2);
+  color: #18d4a3;
+}
 
 .dashboard-container {
 background: linear-gradient(135deg, #000218 0%, #0c0c1f 25%, #1a1a2e 50%, #2a1b28 85%, #382033 100%);
@@ -288,5 +313,75 @@ text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
 
   &:hover {
     color: #18d4a3;
+  }
+}
+
+.portfolio-snapshot-box {
+  background: linear-gradient(135deg, #12141d, #1c1f2c, #2e3446);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  color: #fff;
+  font-family: 'Alegreya Sans', sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+
+  h5 {
+    font-size: 1.2rem;
+    color: #bbbbbb;
+  }
+
+  h3 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0CA77D;
+    margin-top: 0.5rem;
+    text-shadow: 0 0 6px rgba(12, 167, 125, 0.3);
+  }
+
+  .text-muted {
+    color: #888 !important;
+  }
+
+  .chart-container {
+    canvas {
+      background: transparent;
+    }
+  }
+
+  .border {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+
+    .text-muted {
+      font-size: 0.95rem;
+      color: #999;
+    }
+
+    .fw-bold {
+      font-size: 1.2rem;
+      margin-top: 0.3rem;
+    }
+
+    &.text-success {
+      color: #0CA77D !important;
+    }
+
+    &.text-danger {
+      color: #dc3545 !important;
+    }
+  }
+
+  .text-success {
+    color: #0CA77D;
+  }
+
+  .text-danger {
+    color: #ff5c5c;
+  }
+
+  .ms-2 {
+    margin-left: 0.5rem;
   }
 }
