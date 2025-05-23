@@ -91,12 +91,11 @@ getClosedPositions(): Observable<any[]> {
       .pipe(catchError(this.handle));
   }
 
-  placeMarketOrderSell(symbol: string, qty: number, side: 'buy' | 'sell', idUsuario: number , time:string): Observable<string> {
+  placeMarketOrderSell(symbol: string, qty: number, side: 'buy' | 'sell', time:string): Observable<string> {
     const params = {
       symbol,
       qty,
       side,
-      idUsuario,
       time
     };
     return this.http.post(`http://localhost:8080/api/orders/market/sell`, null, { params, responseType: 'text' })

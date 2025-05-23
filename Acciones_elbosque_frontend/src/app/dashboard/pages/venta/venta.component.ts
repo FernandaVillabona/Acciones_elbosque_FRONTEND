@@ -44,13 +44,13 @@ export class VentaComponent {
 
   onRealizarVenta(symbol: string, cantidad: number, time: string): void {
 
-    const idUsuario = Number(localStorage.getItem('idUsuario'));
+    //const idUsuario = Number(localStorage.getItem('idUsuario'));
     if (cantidad < 1) {
       alert('Datos inválidos');
       return;
     }
 
-    this.alpaca.placeMarketOrderSell(symbol, cantidad, 'sell', idUsuario , time).subscribe({
+    this.alpaca.placeMarketOrderSell(symbol, cantidad, 'sell', time).subscribe({
       next: (res) => {
         alert(`✅ Venta de ${cantidad} ${symbol} exitosa.`);
       },
