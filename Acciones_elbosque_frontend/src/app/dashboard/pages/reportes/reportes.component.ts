@@ -31,10 +31,10 @@ interface OrdenPorTipo {
 export class ReportesComponent implements OnInit, AfterViewInit {
   resumen: PortafolioResumen[] = [];
   distribucion: DistribucionPortafolio[] = [];
-  chart: Chart | undefined;
-  pieChart: Chart | undefined;
+  chart: any;
+  pieChart: any;
   ordenesPorTipo: OrdenPorTipo[] = [];
-  ordenesChart: Chart | undefined;
+  ordenesChart: any;
 
   constructor(private http: HttpClient) {}
 
