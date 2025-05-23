@@ -97,44 +97,25 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td>Juan Pérez</td>
-        <td>juan.perez&#64;example.com</td>
-        <td>555-1234</td>
-      </tr>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td>María Gómez</td>
-        <td>maria.gomez&#64;example.com</td>
-        <td>555-5678</td>
-      </tr>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td><strong>Carlos Méndez</strong></td>
-        <td>carlos.mendez&#64;finanzasegura.com</td>
-        <td>555-7890</td>
-      </tr>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td><strong>Laura García</strong></td>
-        <td>laura.garcia&#64;accionestrade.com</td>
-        <td>555-2345</td>
-      </tr>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td><strong>Ana Torres</strong></td>
-        <td>ana.torres&#64;inversionesverdes.com</td>
-        <td>555-3344</td>
-      </tr>
-      <tr>
-        <td><input type="radio" name="comisionistaSeleccionado" /></td>
-        <td><strong>Luis Fernández</strong></td>
-        <td>luis.fernandez&#64;globaltraders.com</td>
-        <td>555-7788</td>
-      </tr>
+    <tr *ngFor="let comi of comisionistas">
+    <td>
+      <input
+        type="radio"
+        name="comisionistaSeleccionado"
+        [value]="comi.id_comisionista"
+        (change)="idSeleccionado = comi.id_comisionista"
+      />
+    </td>
+      <td>{{comi.nombre}}</td>
+      <td>{{comi.email}}</td>
+      <td>{{comi.telefono}}</td>
+    </tr>
     </tbody>
   </table>
+  <button type="button" class="btn btn-danger">
+          (click)="seleccionarComisionista(idSeleccionado)">
+    Vender
+  </button>
 </div>
 
   <!-- Botón para asociar -->
