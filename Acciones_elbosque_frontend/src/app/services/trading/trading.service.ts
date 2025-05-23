@@ -78,3 +78,5 @@ export class TradingService {
     this.saveState();
   }
 }
+
+
