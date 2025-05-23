@@ -21,29 +21,24 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-      <td>
-        <input type="radio" name="comisionistaSeleccionado" />
-      </td>
-      <td>Juan Pérez</td>
-      <td>juan.perez.com</td>
-      <td>555-1234</td>
+    <tr *ngFor="let comi of comisionistas">
+    <td>
+      <input
+        type="radio"
+        name="comisionistaSeleccionado"
+        [value]="comi.id_comisionista"
+        (change)="idSeleccionado = comi.id_comisionista"
+      />
+    </td>
+      <td>{{comi.nombre}}</td>
+      <td>{{comi.email}}</td>
+      <td>{{comi.telefono}}</td>
     </tr>
-    <tr>
-      <td>
-        <input type="radio" name="comisionistaSeleccionado" />
-      </td>
-      <td>María Gómez</td>
-      <td>maria.gomez</td>
-      <td>555-5678</td>
-    </tr>
-    <!-- Puedes agregar más filas según sea necesario -->
     </tbody>
   </table>
-
-  <!-- Botón para asociar -->
-  <button class="btn btn-primary">
-    Asociar
+  <button type="button" class="btn btn-danger">
+          (click)="seleccionarComisionista(idSeleccionado)">
+    Vender
   </button>
 </div>
 
